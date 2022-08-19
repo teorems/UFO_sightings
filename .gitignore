@@ -7,3 +7,11 @@
 ./UFOSightings/app.R
 ./rsconnect
 ./scripts/archive/
+UFO_sightings.Rproj
+future_appV2
+plot_zoom_png_hists_2011_2022
+rsconnect
+~.Rprofi
+.Rdata
+.httr-oauth
+.DS_Store
