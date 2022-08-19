@@ -1,0 +1,9 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+./data/archive/
+./UFOSightingsV2
+./UFOSightings/app.R
+./rsconnect
+./scripts/archive/
