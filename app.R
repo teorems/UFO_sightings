@@ -3,7 +3,7 @@ library(leaflet)
 library(tidyverse, quietly = TRUE)
 library(lubridate)
 
-UFO <-readRDS("../data/nuforc_events_2011_2022_v2.Rds")
+UFO <-readRDS("data/nuforc_events_2011_2022_v2.Rds")
 UFO <- UFO %>% rowid_to_column("index")
 
 ###
@@ -59,7 +59,7 @@ server <- function(input, output) {
         y = ""
       ) +
       coord_flip() +
-      theme_minimal() +
+      theme_classic() +
       scale_y_continuous(breaks = ~ round(unique(pretty(., n = 5))))
   })
   
@@ -104,7 +104,7 @@ ui <- fluidPage(
         end = max(UFO$date_time, na.rm = TRUE)
       ),
       helpText(
-        "NUFORC geolocated and time standardized ufo reports for close to a century of data. 80,000 + reports."
+        "NUFORC geolocated and time standardized ufo reports."
       )
       
     ),
@@ -124,11 +124,8 @@ ui <- fluidPage(
       div(
         p(
           "Original Data from ",
-          a("US National UFO Reporting Center", href = "https://nuforc.org/"),
-          "extracted and cleaned by ",
-          a("planetsig", href = "https://github.com/planetsig/ufo-reports"),
-          ".",
-          "Additional data wrangling and shiny app by",
+          a("US National UFO Reporting Center.", href = "https://nuforc.org/"),
+          "Data retrieval and shiny app by",
           a("myself.", href = "https://emanuele-messori.shinyapps.io/PFolio/")
         )
       )
