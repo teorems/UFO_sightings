@@ -1,4 +1,4 @@
-# UFO Sightings all over the world
+# UFO Sightings around the world
 
 The [National UFO Reporting Center](https://nuforc.org/) hosts reporting about UFO sightings.
 
