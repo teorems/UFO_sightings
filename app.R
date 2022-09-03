@@ -100,7 +100,7 @@ ui <- fluidPage(
       dateRangeInput(
         "dates",
         "Choose a date range:",
-        start = min(UFO$date_time, na.rm = TRUE),
+        start = ymd(20220101),
         end = max(UFO$date_time, na.rm = TRUE)
       ),
       helpText(

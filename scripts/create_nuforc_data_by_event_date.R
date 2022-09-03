@@ -2,7 +2,7 @@ library(tidyverse)
 library(rvest)
 library(lubridate)
 
-# this is the url which lists all the reporings by date
+# this is the url which lists all the reportings by date
 by_date_url <- "http://www.nuforc.org/webreports/ndxevent.html"
 
 # we first obtain the month listings
