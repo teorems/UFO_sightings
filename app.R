@@ -3,7 +3,7 @@ library(leaflet)
 library(tidyverse, quietly = TRUE)
 library(lubridate)
 
-UFO <-readRDS("data/nuforc_events_2011_2022_v2.Rds")
+UFO <-readRDS("data/nuforc_events_2022.Rds")
 UFO <- UFO %>% rowid_to_column("index")
 
 ###
@@ -104,7 +104,7 @@ ui <- fluidPage(
         end = max(UFO$date_time, na.rm = TRUE)
       ),
       helpText(
-        "NUFORC geolocated and time standardized ufo reports."
+        "NUFORC geolocated and time standardised ufo reports."
       )
       
     ),

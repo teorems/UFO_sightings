@@ -5,7 +5,7 @@ library(lubridate)
 # this is the url which lists all the reportings by date
 by_date_url <- "http://www.nuforc.org/webreports/ndxevent.html"
 
-# we first obtain the month listings
+# we first obtain the monthly listings
 event_month_urls <- by_date_url %>%
   read_html() %>%
   html_elements("td a") %>%
@@ -14,8 +14,8 @@ event_month_urls <- by_date_url %>%
 
 ### dataframe of urls by year - in this way we can limit the information retrieved in a time window (retrieving all the information at once can be very time consuming, it's best to split e.g. by decades).
 
-start_year <- "####"
-end_year <- "####"
+start_year <- "2022"
+end_year <- "2022"
 urls_by_year <- data.frame(url = event_month_urls, year = str_extract(event_month_urls, "\\d{4}"))
 selection <- urls_by_year %>% filter(between(year, start_year, end_year))
 
@@ -42,20 +42,24 @@ nuforc_events_clean <- nuforc_events %>%
 ### geocoding
 
 library(tidygeocoder)
-nuforc_events_clean <- geocode_combine(
+nuforc_events_geocoded <- geocode_combine(
   nuforc_events_clean,
   queries = list(list(method = "osm", city = "city", state = "state", country = "country"),
-    list(method = "arcgis", address = "full_loc"),
+    list(method = "arcgis", address = "localisation")),
     cascade = TRUE
   )
-)
 
-if (length(unique(year(nuforc_events_clean$date_time))) > 1) {
-  years <- paste(c(year(min(nuforc_events_clean$date_time)), year(max(nuforc_events_clean$date_time))), collapse = "_")
+
+if (length(unique(year(nuforc_events_geocoded$date_time))) > 1) {
+  years <- paste(c(year(min(nuforc_events_geocoded$date_time)), year(max(nuforc_events_geocoded$date_time))), collapse = "_")
 } else {
-  years <- unique(year(nuforc_events_clean$date_time))
+  years <- unique(year(nuforc_events_geocoded$date_time))
 }
+
+### further cleaning
+
+nuforc_events_geocoded <- nuforc_events_geocoded %>% mutate(shape = if_else(is.na(shape)| shape == "Unknown", "Other", shape))
 
 ### saveRDS
 
-saveRDS(nuforc_events_clean, file = paste0("data/nuforc_events_", years, ".Rds"))
+saveRDS(nuforc_events_geocoded, file = paste0("data/nuforc_events_", years, ".Rds"))
