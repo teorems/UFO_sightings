@@ -10,4 +10,4 @@ I include here all the datasets which include reports compiled until June 2022 .
 
 Additional data cleaning is needed to normalize the toponyms, task which i plan to do next.
 
-The dashboard is still in progress and is just there to give a rough idea of the phenomenon.
+The dashboard (`app.R`) loads and merges every extract in `data/`, covering reports from the 1400s through October 2022, and is still just there to give a rough idea of the phenomenon.

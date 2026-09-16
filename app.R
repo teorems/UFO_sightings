@@ -1,9 +1,25 @@
 ### LIBRARIES & DATA
 library(pacman)
-pacman::p_load(leaflet, tidyverse, lubridate, plotly)
+pacman::p_load(leaflet, tidyverse, lubridate, plotly, DT, shinythemes)
 
-UFO <- readRDS("data/nuforc_events_2022.Rds")
-UFO <- UFO %>% rowid_to_column("index")
+# load and merge every yearly/decade extract in data/ instead of only the
+# latest one, so the app reflects the full history described in the README.
+# the extracts overlap at their boundaries (e.g. 2022 appears both in the
+# 2011-2022 bundle and in the standalone 2022 refresh), so duplicates are
+# dropped by event_url, which uniquely identifies a report.
+data_cols <- c(
+  "date_time", "localisation", "city", "state", "country", "shape",
+  "duration", "summary", "posted", "images", "event_url", "full_desc",
+  "year", "lat", "long"
+)
+
+UFO <- list.files("data", pattern = "\\.Rds$", full.names = TRUE) %>%
+  map(readRDS) %>%
+  map(~ select(.x, all_of(data_cols))) %>%
+  bind_rows() %>%
+  distinct(event_url, .keep_all = TRUE) %>%
+  arrange(date_time) %>%
+  rowid_to_column("index")
 
 ###
 
