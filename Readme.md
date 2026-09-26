@@ -4,10 +4,16 @@ The [National UFO Reporting Center](https://nuforc.org/) hosts reporting about U
 
 I started this project at first with a dataset provided by [planetsig](https://github.com/planetsig/ufo-reports) which spans from 1900 to 2014. The problem with this data, even if geolocated, was that very few countries outside US were specified and should be sought with reversed geocoding or locality matching. Moreover, the full description included in the online reports was not there.
 
-After some tinkering with this dataset, i resoIved myself to build a scraper on R to retrieve the original data. The data retrieval can be quite time consuming and is better done in steps or from the cloud (e.g. start the code in bundles, on differents jupyter notebooks, free on Kaggle) .
+After some tinkering with this dataset, i resolved myself to build a scraper on R to retrieve the original data. The data retrieval can be quite time consuming and is better done in steps or from the cloud (e.g. start the code in bundles, on different jupyter notebooks, free on Kaggle) .
 
-I include here all the datasets which include reports compiled until June 2022 . The first dataset is a mostly a quite funny florilegium of historical anecdotes. The records that follow are voluntary reports, sometimes lucid, sometimes unorthodox, submitted to the website.
+I include here all the datasets which include reports compiled until October 2022 . The first dataset is a mostly a quite funny florilegium of historical anecdotes. The records that follow are voluntary reports, sometimes lucid, sometimes unorthodox, submitted to the website.
 
 Additional data cleaning is needed to normalize the toponyms, task which i plan to do next.
 
 The dashboard (`app.R`) loads and merges every extract in `data/`, covering reports from the 1400s through October 2022, and is still just there to give a rough idea of the phenomenon.
+
+## Status of the scraper
+
+The NUFORC data stops in October 2022 and is no longer updated. The scraping scripts in `scripts/` and `funcs/` were written for NUFORC's old site (the `/webreports/` pages), which disappeared when the site was rebuilt, so they no longer work. They are kept for reference only. NUFORC's [terms of service](https://nuforc.org/terms/) also forbid scraping the site without written consent.
+
+The report pages still exist on the new site under a new address. The dashboard rewrites the stored links to `https://nuforc.org/sighting/?id=<report number>`, so each report still opens from the map and the table.
