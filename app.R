@@ -18,6 +18,11 @@ UFO <- list.files("data", pattern = "\\.Rds$", full.names = TRUE) %>%
   map(~ select(.x, all_of(data_cols))) %>%
   bind_rows() %>%
   distinct(event_url, .keep_all = TRUE) %>%
+  # the scraped /webreports/.../S<id>.html pages no longer exist since NUFORC
+  # rebuilt its site; the same report id now lives at /sighting/?id=<id>
+  mutate(event_url = str_replace(
+    event_url, "^.*/S(\\d+)\\.html$", "https://nuforc.org/sighting/?id=\\1"
+  )) %>%
   arrange(date_time) %>%
   rowid_to_column("index")
 
@@ -178,7 +183,7 @@ server <- function(input, output) {
         Report = paste0("<a href='", event_url, "' target='_blank'>link</a>")
       )
   },
-  escape = -8, rownames = FALSE,
+  escape = -8, rownames = FALSE, selection = "none",
   # bootstrap style picks up the darkly theme; DT's default style draws
   # light rows under darkly's white text
   style = "bootstrap", class = "table-condensed table-striped table-hover",
@@ -211,7 +216,7 @@ server <- function(input, output) {
     })
 
     output$rep_url <- renderUI({
-      tagList(a(url(), href = url()))
+      a("Open the original report on NUFORC", href = url(), target = "_blank")
     })
   })
 }
