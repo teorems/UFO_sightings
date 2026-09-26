@@ -40,8 +40,13 @@ ui <- fluidPage(
       dateRangeInput(
         "dates",
         "Choose a date range:",
-        start = min(UFO$date_time, na.rm = TRUE),
-        end = max(UFO$date_time, na.rm = TRUE)
+        # default to the last 2 years so the first render (map + plot + table)
+        # stays light; the full history is still one filter widen away, since
+        # min/max span the whole dataset.
+        start = max(UFO$date_time, na.rm = TRUE) - years(2),
+        end = max(UFO$date_time, na.rm = TRUE),
+        min = min(UFO$date_time, na.rm = TRUE),
+        max = max(UFO$date_time, na.rm = TRUE)
       ),
       helpText(
         "NUFORC geolocated and time standardised ufo reports.",
