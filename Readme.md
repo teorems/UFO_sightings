@@ -12,6 +12,10 @@ Additional data cleaning is needed to normalize the toponyms, task which i plan 
 
 The dashboard (`app.R`) loads and merges every extract in `data/`, covering reports from the 1400s through October 2022, and is still just there to give a rough idea of the phenomenon.
 
+## France: GEIPAN cases
+
+The dashboard also has a France page built on the case database of [GEIPAN](https://www.cnes-geipan.fr), the unit of the French space agency (CNES) that investigates unidentified aerospace phenomena. Each case is classified after investigation, from A (identified) to D (still unexplained). The data is GEIPAN's case export (`data/export_cas.xlsx`, downloaded from the case search page on their site); to update it, download the export again and replace the file. Case descriptions are in French, and GEIPAN rounds locations to 0.1° to protect witnesses.
+
 ## Status of the scraper
 
 The NUFORC data stops in October 2022 and is no longer updated. The scraping scripts in `scripts/` and `funcs/` were written for NUFORC's old site (the `/webreports/` pages), which disappeared when the site was rebuilt, so they no longer work. They are kept for reference only. NUFORC's [terms of service](https://nuforc.org/terms/) also forbid scraping the site without written consent.
