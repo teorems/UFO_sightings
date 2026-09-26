@@ -1,9 +1,25 @@
 ### LIBRARIES & DATA
 library(pacman)
-pacman::p_load(leaflet, tidyverse, lubridate, plotly)
+pacman::p_load(leaflet, tidyverse, lubridate, plotly, DT, shinythemes)
 
-UFO <- readRDS("data/nuforc_events_2022.Rds")
-UFO <- UFO %>% rowid_to_column("index")
+# load and merge every yearly/decade extract in data/ instead of only the
+# latest one, so the app reflects the full history described in the README.
+# the extracts overlap at their boundaries (e.g. 2022 appears both in the
+# 2011-2022 bundle and in the standalone 2022 refresh), so duplicates are
+# dropped by event_url, which uniquely identifies a report.
+data_cols <- c(
+  "date_time", "localisation", "city", "state", "country", "shape",
+  "duration", "summary", "posted", "images", "event_url", "full_desc",
+  "year", "lat", "long"
+)
+
+UFO <- list.files("data", pattern = "\\.Rds$", full.names = TRUE) %>%
+  map(readRDS) %>%
+  map(~ select(.x, all_of(data_cols))) %>%
+  bind_rows() %>%
+  distinct(event_url, .keep_all = TRUE) %>%
+  arrange(date_time) %>%
+  rowid_to_column("index")
 
 ###
 
@@ -12,7 +28,13 @@ UFO <- UFO %>% rowid_to_column("index")
 ui <- fluidPage(
   tags$head(
     tags$style(HTML(
-      ""
+      # CartoDB's dark_all/positron tiles now require a paid API key, so the
+      # map uses plain OpenStreetMap tiles with a CSS filter to fake the dark
+      # look the app had before; scoped to the tile pane so markers/popups
+      # (drawn in separate leaflet panes) are left untouched.
+      "#map .leaflet-tile-pane {
+        filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9);
+      }"
     ))
   ),
   theme = shinythemes::shinytheme("darkly"),
@@ -24,8 +46,13 @@ ui <- fluidPage(
       dateRangeInput(
         "dates",
         "Choose a date range:",
-        start = min(UFO$date_time, na.rm = TRUE),
-        end = max(UFO$date_time, na.rm = TRUE)
+        # default to the last 2 years so the first render (map + plot + table)
+        # stays light; the full history is still one filter widen away, since
+        # min/max span the whole dataset.
+        start = max(UFO$date_time, na.rm = TRUE) - years(2),
+        end = max(UFO$date_time, na.rm = TRUE),
+        min = min(UFO$date_time, na.rm = TRUE),
+        max = max(UFO$date_time, na.rm = TRUE)
       ),
       helpText(
         "NUFORC geolocated and time standardised ufo reports.",
@@ -85,7 +112,7 @@ server <- function(input, output) {
         preferCanvas = TRUE,
         minZoom = 1
       )) %>%
-      addProviderTiles("CartoDB.DarkMatter", options = providerTileOptions(updateWhenIdle = FALSE)) %>%
+      addProviderTiles("OpenStreetMap.Mapnik", options = providerTileOptions(updateWhenIdle = FALSE)) %>%
       addCircleMarkers(
         lng = ~long,
         lat = ~lat,
