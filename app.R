@@ -28,7 +28,13 @@ UFO <- list.files("data", pattern = "\\.Rds$", full.names = TRUE) %>%
 ui <- fluidPage(
   tags$head(
     tags$style(HTML(
-      ""
+      # CartoDB's dark_all/positron tiles now require a paid API key, so the
+      # map uses plain OpenStreetMap tiles with a CSS filter to fake the dark
+      # look the app had before; scoped to the tile pane so markers/popups
+      # (drawn in separate leaflet panes) are left untouched.
+      "#map .leaflet-tile-pane {
+        filter: invert(1) hue-rotate(180deg) brightness(0.95) contrast(0.9);
+      }"
     ))
   ),
   theme = shinythemes::shinytheme("darkly"),
@@ -106,7 +112,7 @@ server <- function(input, output) {
         preferCanvas = TRUE,
         minZoom = 1
       )) %>%
-      addProviderTiles("CartoDB.DarkMatter", options = providerTileOptions(updateWhenIdle = FALSE)) %>%
+      addProviderTiles("OpenStreetMap.Mapnik", options = providerTileOptions(updateWhenIdle = FALSE)) %>%
       addCircleMarkers(
         lng = ~long,
         lat = ~lat,
