@@ -1,6 +1,6 @@
 ### LIBRARIES & DATA
 library(pacman)
-pacman::p_load(leaflet, tidyverse, lubridate, plotly, DT, shinythemes)
+pacman::p_load(leaflet, tidyverse, lubridate, plotly, DT, shinythemes, shinycssloaders)
 
 # load and merge every yearly/decade extract in data/ instead of only the
 # latest one, so the app reflects the full history described in the README.
@@ -18,6 +18,11 @@ UFO <- list.files("data", pattern = "\\.Rds$", full.names = TRUE) %>%
   map(~ select(.x, all_of(data_cols))) %>%
   bind_rows() %>%
   distinct(event_url, .keep_all = TRUE) %>%
+  # the scraped /webreports/.../S<id>.html pages no longer exist since NUFORC
+  # rebuilt its site; the same report id now lives at /sighting/?id=<id>
+  mutate(event_url = str_replace(
+    event_url, "^.*/S(\\d+)\\.html$", "https://nuforc.org/sighting/?id=\\1"
+  )) %>%
   arrange(date_time) %>%
   rowid_to_column("index")
 
@@ -38,6 +43,7 @@ ui <- fluidPage(
     ))
   ),
   theme = shinythemes::shinytheme("darkly"),
+  titlePanel("UFO Sightings around the world"),
   sidebarLayout(
     sidebarPanel(
       selectInput("country", "Choose a country:", choices = c("World", sort(
@@ -58,31 +64,24 @@ ui <- fluidPage(
         "NUFORC geolocated and time standardised ufo reports.",
         div(
           p(
-            "Original Data from ",
+            "Original data from ",
             a("US National UFO Reporting Center.", href = "https://nuforc.org/"),
-            "Data retrieval and shiny app by",
-            a("myself.", href = "https://emanuele-messori.shinyapps.io/PFolio/")
+            "Source and data retrieval scripts on",
+            a("GitHub.", href = "https://github.com/teorems/UFO_sightings")
           )
         )
       )
     ),
     mainPanel(
-      tags$head(
-      tags$style(HTML(
-        "#sightings {
-        font-family:Lucida Console;
-        font-size : 9px;
-        }"
-      ))),
       tabsetPanel(
-        tabPanel("Map", leafletOutput("map"),
+        tabPanel("Map", withSpinner(leafletOutput("map")),
                  br(),
                  htmlOutput("full_rep"),
                  br(),
                  uiOutput("rep_url"),
                  br()),
-        tabPanel("Plot", plotlyOutput("shapes")),
-        tabPanel("Table", DT::dataTableOutput("sightings"))
+        tabPanel("Plot", withSpinner(plotlyOutput("shapes"))),
+        tabPanel("Table", withSpinner(DT::dataTableOutput("sightings")))
       )
     )
   )
@@ -117,7 +116,7 @@ server <- function(input, output) {
         lng = ~long,
         lat = ~lat,
         popup = ~ paste0(
-          date_time,
+          format(date_time, "%d %b %Y %H:%M"),
           "<br>",
           country,
           "<br>",
@@ -135,28 +134,60 @@ server <- function(input, output) {
   ## barplot #----
 
   output$shapes <- renderPlotly({
-    ggplotly(
-      selection() %>%
-        mutate(shape = fct_rev(fct_infreq(shape))) %>%
-        ggplot(aes(shape)) +
-        geom_bar(fill = "#0b110e", color = "white") +
-        labs(
-          title = paste("UFO sightings in", input$country),
-          subtitle = paste(input$dates, collapse = " to "),
-          x = "Shape",
-          y = ""
-        ) +
-        coord_flip() +
-        theme_classic() +
-        scale_y_continuous(breaks = ~ round(unique(pretty(., n = 5))))
-    )
+    p <- selection() %>%
+      mutate(shape = replace_na(shape, "Unknown")) %>%
+      mutate(shape = fct_rev(fct_infreq(shape))) %>%
+      ggplot(aes(shape)) +
+      geom_bar(fill = "#3498db", color = NA, width = 0.7) +
+      labs(
+        title = paste("UFO sightings in", input$country),
+        subtitle = paste(format(input$dates, "%d %b %Y"), collapse = " – "),
+        x = NULL,
+        y = "Sightings"
+      ) +
+      coord_flip() +
+      theme_minimal(base_size = 12) +
+      theme(
+        plot.background = element_rect(fill = "#222222", color = NA),
+        panel.background = element_rect(fill = "#222222", color = NA),
+        panel.grid.major.y = element_blank(),
+        panel.grid.major.x = element_line(color = "#3a3a3a"),
+        panel.grid.minor = element_blank(),
+        text = element_text(color = "#e9ecef"),
+        axis.text = element_text(color = "#e9ecef"),
+        plot.title = element_text(color = "#ffffff", face = "bold"),
+        plot.subtitle = element_text(color = "#adb5bd")
+      ) +
+      scale_y_continuous(breaks = ~ round(unique(pretty(., n = 5))))
+
+    ggplotly(p) %>%
+      layout(
+        paper_bgcolor = "#222222",
+        plot_bgcolor = "#222222",
+        font = list(color = "#e9ecef")
+      )
   })
 
   ## table ----
 
-  output$sightings <- DT::renderDataTable(
-    selection() %>% select(-c(index,full_desc, summary))
-  )
+  output$sightings <- DT::renderDataTable({
+    selection() %>%
+      transmute(
+        Date = format(date_time, "%d %b %Y %H:%M"),
+        City = city,
+        State = state,
+        Country = country,
+        Shape = shape,
+        Duration = duration,
+        Posted = posted,
+        Report = paste0("<a href='", event_url, "' target='_blank'>link</a>")
+      )
+  },
+  escape = -8, rownames = FALSE, selection = "none",
+  # bootstrap style picks up the darkly theme; DT's default style draws
+  # light rows under darkly's white text
+  style = "bootstrap", class = "table-condensed table-striped table-hover",
+  options = list(pageLength = 25))
 
 
   # observe click events on the map map
@@ -185,7 +216,7 @@ server <- function(input, output) {
     })
 
     output$rep_url <- renderUI({
-      tagList(a(url(), href = url()))
+      a("Open the original report on NUFORC", href = url(), target = "_blank")
     })
   })
 }
