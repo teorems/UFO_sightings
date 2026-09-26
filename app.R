@@ -68,13 +68,6 @@ ui <- fluidPage(
       )
     ),
     mainPanel(
-      tags$head(
-      tags$style(HTML(
-        "#sightings {
-        font-family:Lucida Console;
-        font-size : 9px;
-        }"
-      ))),
       tabsetPanel(
         tabPanel("Map", withSpinner(leafletOutput("map")),
                  br(),
@@ -184,7 +177,12 @@ server <- function(input, output) {
         Posted = posted,
         Report = paste0("<a href='", event_url, "' target='_blank'>link</a>")
       )
-  }, escape = -8, rownames = FALSE, options = list(pageLength = 25))
+  },
+  escape = -8, rownames = FALSE,
+  # bootstrap style picks up the darkly theme; DT's default style draws
+  # light rows under darkly's white text
+  style = "bootstrap", class = "table-condensed table-striped table-hover",
+  options = list(pageLength = 25))
 
 
   # observe click events on the map map
