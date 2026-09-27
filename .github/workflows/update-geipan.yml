@@ -1,0 +1,71 @@
+name: Update GEIPAN data
+
+# Downloads GEIPAN's case export once a week and rebuilds the site data, so the
+# France page follows new investigations without manual uploads.
+on:
+  schedule:
+    - cron: "43 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data-updates
+  cancel-in-progress: false
+
+env:
+  # The "export" link of the case search page on https://www.cnes-geipan.fr
+  GEIPAN_EXPORT_URL: ""
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download the GEIPAN case export
+        run: |
+          if [ -z "$GEIPAN_EXPORT_URL" ]; then
+            echo "::error::Set GEIPAN_EXPORT_URL in .github/workflows/update-geipan.yml"
+            exit 1
+          fi
+          curl -fsSL --retry 3 -A "UFO_sightings dashboard (https://github.com/teorems/UFO_sightings)" \
+            -o "$RUNNER_TEMP/export_cas.xlsx" "$GEIPAN_EXPORT_URL"
+          # an .xlsx file is a zip archive; anything else is an error page
+          if [ "$(head -c 2 "$RUNNER_TEMP/export_cas.xlsx")" != "PK" ]; then
+            echo "::error::The download is not an Excel file"
+            exit 1
+          fi
+
+      - name: Install R
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends r-base-core r-cran-tidyverse r-cran-readxl r-cran-jsonlite
+
+      - name: Check the export and rebuild the site data
+        run: |
+          # refuse an export with far fewer cases than the current one (a
+          # truncated or filtered download)
+          Rscript -e '
+            old <- nrow(readxl::read_excel("data/export_cas.xlsx"))
+            new <- nrow(readxl::read_excel(file.path(Sys.getenv("RUNNER_TEMP"), "export_cas.xlsx")))
+            message("cases: ", old, " -> ", new)
+            if (new < 0.9 * old) stop("the new export has far fewer cases than the current one")
+          '
+          cp "$RUNNER_TEMP/export_cas.xlsx" data/export_cas.xlsx
+          Rscript scripts/build_site_data.R
+
+      - name: Commit if the cases changed
+        run: |
+          # the .xlsx differs on every download, so only the cases decide
+          if git diff --quiet -- docs/data/geipan.json; then
+            echo "No new or changed cases."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/export_cas.xlsx docs/data
+          git commit -m "Update GEIPAN data"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push

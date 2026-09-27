@@ -34,6 +34,21 @@ The dashboard shows each NUFORC report's short summary and links to the full rep
 
 The dashboard also has a France page built on the case database of [GEIPAN](https://www.cnes-geipan.fr), the unit of the French space agency (CNES) that investigates unidentified aerospace phenomena. Each case is classified after investigation, from A (identified) to D (still unexplained). The data is GEIPAN's case export (`data/export_cas.xlsx`, downloaded from the case search page on their site); to update it, download the export again and replace the file. Case descriptions are in French, and GEIPAN rounds locations to 0.1° to protect witnesses.
 
+## Sky tonight
+
+The third page of the dashboard shows what someone looking up could be seeing, for any place (your location or a point on the map): where the International Space Station is right now, the next visible passes of the ISS, Tiangong and Hubble, the planets and Moon tonight, satellites overhead, fresh Starlink "trains", and upcoming rocket launches, flagging twilight launches whose lit plume is often reported as a UFO. Each part says how many GEIPAN cases were explained by it (`docs/data/geipan_explanations.json`).
+
+Positions are computed in the browser: satellites with [satellite.js](https://github.com/shashwatak/satellite-js) from orbital elements published by [CelesTrak](https://celestrak.org), planets with [Astronomy Engine](https://github.com/cosinekitty/astronomy). Upcoming launches come from The Space Devs' [Launch Library 2](https://thespacedevs.com/llapi).
+
+## Automatic updates
+
+Two GitHub Actions workflows keep the data fresh and commit it when it changes; both can also be started by hand from the repository's Actions tab ("Run workflow"):
+
+- `update-sky-data.yml`, every day: downloads the satellite orbits and upcoming launches (`scripts/update_sky_data.py`) into `docs/data/sky/`.
+- `update-geipan.yml`, every Monday: downloads GEIPAN's case export into `data/export_cas.xlsx` and rebuilds the site data. It refuses a download that isn't an Excel file or has far fewer cases than the current one, and commits only when the cases changed. The download link is set in the workflow (`GEIPAN_EXPORT_URL`).
+
+GitHub pauses scheduled workflows in repositories without activity for 60 days; if that happens, re-enable them from the Actions tab.
+
 ## Status of the scraper
 
 The NUFORC data stops in October 2022 and is no longer updated. The scraping scripts in `scripts/` and `funcs/` were written for NUFORC's old site (the `/webreports/` pages), which disappeared when the site was rebuilt, so they no longer work. They are kept for reference only. NUFORC's [terms of service](https://nuforc.org/terms/) also forbid scraping the site without written consent.
