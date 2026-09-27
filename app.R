@@ -2,29 +2,9 @@
 library(pacman)
 pacman::p_load(leaflet, tidyverse, lubridate, plotly, DT, shinythemes, shinycssloaders, readxl)
 
-# load and merge every yearly/decade extract in data/ instead of only the
-# latest one, so the app reflects the full history described in the README.
-# the extracts overlap at their boundaries (e.g. 2022 appears both in the
-# 2011-2022 bundle and in the standalone 2022 refresh), so duplicates are
-# dropped by event_url, which uniquely identifies a report.
-data_cols <- c(
-  "date_time", "localisation", "city", "state", "country", "shape",
-  "duration", "summary", "posted", "images", "event_url", "full_desc",
-  "year", "lat", "long"
-)
-
-UFO <- list.files("data", pattern = "\\.Rds$", full.names = TRUE) %>%
-  map(readRDS) %>%
-  map(~ select(.x, all_of(data_cols))) %>%
-  bind_rows() %>%
-  distinct(event_url, .keep_all = TRUE) %>%
-  # the scraped /webreports/.../S<id>.html pages no longer exist since NUFORC
-  # rebuilt its site; the same report id now lives at /sighting/?id=<id>
-  mutate(event_url = str_replace(
-    event_url, "^.*/S(\\d+)\\.html$", "https://nuforc.org/sighting/?id=\\1"
-  )) %>%
-  arrange(date_time) %>%
-  rowid_to_column("index")
+source("funcs/load_data.R")
+UFO <- load_nuforc()
+GEIPAN <- load_geipan()
 
 geipan_classes <- c(
   A = "A: identified",
@@ -35,31 +15,6 @@ geipan_classes <- c(
 # one-hue ramp, dimmest for identified cases and brightest for unexplained
 # ones; validated as an ordinal ramp against the #222222 background
 geipan_colors <- c(A = "#1c5cab", B = "#3987e5", C = "#86b6ef", D = "#cde2fb")
-
-# case export from https://www.cnes-geipan.fr (case search page); to update,
-# download it again and replace the file. Dates like "--/08/1947" have unknown
-# parts, so they are rewritten as "1947-08", which also sorts correctly.
-GEIPAN <- read_excel("data/export_cas.xlsx") %>%
-  transmute(
-    id = .data[["ID Etude de Cas"]],
-    # titles end with the date in several spellings (29.5.2018, --.08.1947, 2004)
-    place = str_squish(str_remove(
-      .data[["Titre du Cas"]], "\\s*(([-\\d]{1,2}\\.){2}[-\\d]{2,4}|[-\\d]{4})$"
-    )),
-    date = map_chr(
-      str_split(.data[["Date d'observation"]], "/"),
-      ~ paste(rev(.x[.x != "--"]), collapse = "-")
-    ),
-    year = as.integer(.data[["Année"]]),
-    region = .data[["Région"]],
-    class = .data[["Classification"]],
-    explanation = .data[["Phénomène"]],
-    summary = .data[["Identification"]],
-    details = .data[["Détails"]],
-    lat = .data[["Latitude"]],
-    long = .data[["Longitude"]]
-  ) %>%
-  arrange(desc(year), desc(date))
 
 theme_app <- function() {
   theme_minimal(base_size = 12) +
