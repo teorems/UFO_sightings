@@ -310,6 +310,25 @@ function skyPage() {
       : `<p>No visible pass of the ISS, Tiangong or Hubble in the next 3 days from here (${fmt(hidden)} passes happen in daylight or in the Earth's shadow).</p>`;
   }
 
+  // "STARLINK-38244" -> "STARLINK", "GUOWANG 26 OBJECT A" -> "GUOWANG"; rocket
+  // stages and debris don't name a launch, and objects not identified yet are
+  // only named by their designator ("2026-220A")
+  function familyOf(name) {
+    if (/^\d{4}-\d{3}[A-Z]*$/.test(name) || /\b(R\/B|DEB)\b/i.test(name)) return null;
+    return name.replace(/\s+OBJECT\s+[A-Z]+$/i, '').replace(/[-\s]+\d+$/, '') || name;
+  }
+
+  function launchName(group) {
+    const counts = new Map();
+    for (const s of group) {
+      const f = familyOf(s.name);
+      if (f) counts.set(f, (counts.get(f) || 0) + 1);
+    }
+    const families = [...counts.entries()].sort((a, b) => b[1] - a[1]).map((e) => e[0]);
+    if (!families.length) return 'Not identified yet';
+    return families.length > 3 ? `${families.slice(0, 3).join(', ')}…` : families.join(', ');
+  }
+
   function renderTrains() {
     if (!fresh.length) {
       $('#s-trains').innerHTML = sats ? '<p class="hint">No satellites launched in the last 30 days.</p>' : '';
@@ -329,8 +348,7 @@ function skyPage() {
         const lead = g.slice().sort((a, b) => a.id.localeCompare(b.id))[0];
         // trains pass slowly: a 1-minute step over 2 days keeps this quick on phones
         const next = findPasses(lead.satrec, place, observer, now, 48, 60).find((p) => p.visible);
-        const family = lead.name.replace(/[-\s]*\d+$/, '') || lead.name;
-        return { family, launch: lead.id.slice(0, 8), n: g.length, next };
+        return { family: launchName(g), launch: lead.id.slice(0, 8), n: g.length, next };
       })
       .sort((a, b) => (a.next ? a.next.start : Infinity) - (b.next ? b.next.start : Infinity));
     $('#s-trains').innerHTML = rows.length ? `
