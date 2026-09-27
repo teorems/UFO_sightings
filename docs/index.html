@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UFO Sightings</title>
+  <meta name="description" content="Maps and charts of UFO reports: NUFORC reports from around the world and GEIPAN investigations in France.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛸</text></svg>">
+  <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+  <link rel="stylesheet" href="vendor/leaflet.markercluster/MarkerCluster.css">
+  <link rel="stylesheet" href="vendor/leaflet.markercluster/MarkerCluster.Default.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <span class="brand">UFO Sightings</span>
+    <nav class="pages" aria-label="Data source">
+      <a href="#worldwide" data-page="nuforc">Worldwide (NUFORC)</a>
+      <a href="#france" data-page="france">France (GEIPAN)</a>
+    </nav>
+    <a class="repo" href="https://github.com/teorems/UFO_sightings">Source on GitHub</a>
+  </header>
+
+  <main>
+    <section id="page-nuforc" class="page" aria-label="Worldwide reports from NUFORC">
+      <aside class="sidebar">
+        <label>Country
+          <select id="n-country"></select>
+        </label>
+        <div class="range">
+          <label>From <input type="date" id="n-from"></label>
+          <label>To <input type="date" id="n-to"></label>
+        </div>
+        <p class="count" id="n-count" aria-live="polite"></p>
+        <div class="notes">
+          <p>Reports submitted to the US <a href="https://nuforc.org/">National UFO Reporting Center</a>, geolocated and with standardised dates. The data stops in October 2022.</p>
+          <p>The map shows each report's short summary. The full report opens on nuforc.org.</p>
+          <p>The view starts on the last two years. Widen the dates to see the whole history, back to the 1400s.</p>
+        </div>
+      </aside>
+      <div class="content">
+        <div class="tabs" role="tablist" aria-label="View">
+          <button role="tab" data-tab="map" aria-selected="true">Map</button>
+          <button role="tab" data-tab="chart" aria-selected="false">Chart</button>
+          <button role="tab" data-tab="table" aria-selected="false">Table</button>
+        </div>
+        <p class="status" id="n-status" aria-live="polite"></p>
+        <div class="panel" data-panel="map">
+          <div id="n-map" class="map"></div>
+          <div id="n-detail" class="detail"><p class="hint">Click a point on the map to read the report.</p></div>
+        </div>
+        <div class="panel" data-panel="chart" hidden>
+          <div id="n-chart" class="chart"></div>
+          <p class="empty" id="n-chart-empty" hidden>No reports in the current selection.</p>
+        </div>
+        <div class="panel" data-panel="table" hidden>
+          <div id="n-table"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-france" class="page" aria-label="French cases investigated by GEIPAN" hidden>
+      <aside class="sidebar">
+        <div class="range">
+          <label>From <select id="f-from"></select></label>
+          <label>To <select id="f-to"></select></label>
+        </div>
+        <fieldset>
+          <legend>Classification</legend>
+          <div id="f-classes"></div>
+        </fieldset>
+        <label>Region
+          <select id="f-region"></select>
+        </label>
+        <p class="count" id="f-count" aria-live="polite"></p>
+        <div class="notes">
+          <p>Cases investigated by <a href="https://www.cnes-geipan.fr">GEIPAN</a>, the unit of the French space agency (CNES) that studies unidentified aerospace phenomena. After investigation each case is classified from A (identified) to D (still unexplained).</p>
+          <p>Case descriptions are in French. GEIPAN rounds locations to 0.1° to protect witnesses.</p>
+        </div>
+      </aside>
+      <div class="content">
+        <div class="tabs" role="tablist" aria-label="View">
+          <button role="tab" data-tab="map" aria-selected="true">Map</button>
+          <button role="tab" data-tab="chart" aria-selected="false">Charts</button>
+          <button role="tab" data-tab="table" aria-selected="false">Table</button>
+        </div>
+        <p class="status" id="f-status" aria-live="polite"></p>
+        <div class="panel" data-panel="map">
+          <div id="f-map" class="map"></div>
+          <div id="f-detail" class="detail"><p class="hint">Click a point on the map to read the case.</p></div>
+        </div>
+        <div class="panel" data-panel="chart" hidden>
+          <div id="f-years" class="chart"></div>
+          <div id="f-explanations" class="chart"></div>
+          <p class="empty" id="f-expl-empty" hidden>No identified cases (class A or B) in the current selection.</p>
+          <p class="empty" id="f-chart-empty" hidden>No cases in the current selection.</p>
+        </div>
+        <div class="panel" data-panel="table" hidden>
+          <div id="f-table"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="vendor/leaflet/leaflet.js"></script>
+  <script src="vendor/leaflet.markercluster/leaflet.markercluster.js"></script>
+  <script src="vendor/plotly/plotly-basic.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
