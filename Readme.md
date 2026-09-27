@@ -12,6 +12,18 @@ Additional data cleaning is needed to normalize the toponyms, task which i plan 
 
 The dashboard (`app.R`) loads and merges every extract in `data/`, covering reports from the 1400s through October 2022, and is still just there to give a rough idea of the phenomenon.
 
+## Online version
+
+A static version of the dashboard runs at <https://teorems.github.io/UFO_sightings/>, served by GitHub Pages from the `docs/` folder. It needs no R server: the page is plain HTML and JavaScript (Leaflet for the maps, Plotly for the charts) and reads its data from JSON files in `docs/data/`.
+
+To keep it in sync after the data changes, regenerate those files from the repository root and commit them:
+
+```
+Rscript scripts/build_site_data.R
+```
+
+The online version shows each NUFORC report's short summary and links to the full report on nuforc.org; the full texts (~50 MB compressed) would make the page too heavy. The Shiny app (`app.R`) still works locally and shows the full texts.
+
 ## France: GEIPAN cases
 
 The dashboard also has a France page built on the case database of [GEIPAN](https://www.cnes-geipan.fr), the unit of the French space agency (CNES) that investigates unidentified aerospace phenomena. Each case is classified after investigation, from A (identified) to D (still unexplained). The data is GEIPAN's case export (`data/export_cas.xlsx`, downloaded from the case search page on their site); to update it, download the export again and replace the file. Case descriptions are in French, and GEIPAN rounds locations to 0.1° to protect witnesses.
