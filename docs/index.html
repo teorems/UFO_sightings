@@ -15,6 +15,7 @@
     <nav class="pages" aria-label="Data source">
       <a href="#worldwide" data-page="nuforc">Worldwide (NUFORC)</a>
       <a href="#france" data-page="france">France (GEIPAN)</a>
+      <a href="#sky" data-page="sky">Sky tonight</a>
     </nav>
     <a class="repo" href="https://github.com/teorems/UFO_sightings">Source on GitHub</a>
   </header>
@@ -98,11 +99,61 @@
         </div>
       </div>
     </section>
+    <section id="page-sky" class="page" aria-label="What is in the sky right now" hidden>
+      <aside class="sidebar">
+        <div>
+          <p class="label">Where you are</p>
+          <p id="s-place" class="place"></p>
+        </div>
+        <button type="button" id="s-locate" class="button">Use my location</button>
+        <p class="hint">or click anywhere on the map.</p>
+        <p id="s-loc-status" class="hint" aria-live="polite"></p>
+        <p id="s-sky-state" class="count" aria-live="polite"></p>
+        <div class="notes">
+          <p>Most sightings that investigators manage to explain turn out to be ordinary things in the sky: the International Space Station, satellites, Venus, the Moon, rocket launches. This page shows which of them are up there now and in the coming nights, wherever you are.</p>
+          <p>Your location stays in your browser; nothing is sent anywhere. Times are in your device's time zone.</p>
+          <p id="s-sources"></p>
+        </div>
+      </aside>
+      <div class="content">
+        <p class="status" id="s-status" aria-live="polite"></p>
+        <div id="s-map" class="map"></div>
+        <div class="cards">
+          <section class="card" aria-labelledby="s-iss-title">
+            <h2 id="s-iss-title">The ISS right now</h2>
+            <div id="s-iss"></div>
+          </section>
+          <section class="card" aria-labelledby="s-passes-title">
+            <h2 id="s-passes-title">Space stations you can see</h2>
+            <div id="s-passes"></div>
+          </section>
+          <section class="card" aria-labelledby="s-planets-title">
+            <h2 id="s-planets-title">Planets and Moon tonight</h2>
+            <div id="s-planets"></div>
+          </section>
+          <section class="card" aria-labelledby="s-overhead-title">
+            <h2 id="s-overhead-title">Satellites overhead now</h2>
+            <div id="s-overhead"></div>
+          </section>
+          <section class="card" aria-labelledby="s-trains-title">
+            <h2 id="s-trains-title">Satellite trains</h2>
+            <div id="s-trains"></div>
+          </section>
+          <section class="card" aria-labelledby="s-launches-title">
+            <h2 id="s-launches-title">Upcoming launches</h2>
+            <div id="s-launches"></div>
+          </section>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script src="vendor/leaflet/leaflet.js"></script>
   <script src="vendor/supercluster/supercluster.min.js"></script>
   <script src="vendor/plotly/plotly-basic.min.js"></script>
+  <script src="vendor/satellite/satellite.min.js"></script>
+  <script src="vendor/astronomy/astronomy.browser.min.js"></script>
+  <script src="sky.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

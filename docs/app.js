@@ -647,13 +647,15 @@ function francePage() {
 
 // ---- routing ----------------------------------------------------------------
 
-const pages = { nuforc: nuforcPage(), france: francePage() };
-const HASH_TO_PAGE = { '#france': 'france', '#worldwide': 'nuforc' };
+const pages = { nuforc: nuforcPage(), france: francePage(), sky: skyPage() };
+const HASH_TO_PAGE = { '#france': 'france', '#worldwide': 'nuforc', '#sky': 'sky' };
 
 function route() {
   const name = HASH_TO_PAGE[location.hash] || 'nuforc';
-  $('#page-nuforc').hidden = name !== 'nuforc';
-  $('#page-france').hidden = name !== 'france';
+  Object.keys(pages).forEach((key) => {
+    $(`#page-${key}`).hidden = key !== name;
+    if (key !== name && pages[key].hide) pages[key].hide();
+  });
   document.querySelectorAll('.pages a').forEach((a) => {
     if (a.dataset.page === name) a.setAttribute('aria-current', 'page');
     else a.removeAttribute('aria-current');
