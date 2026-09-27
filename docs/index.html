@@ -7,8 +7,6 @@
   <meta name="description" content="Maps and charts of UFO reports: NUFORC reports from around the world and GEIPAN investigations in France.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛸</text></svg>">
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
-  <link rel="stylesheet" href="vendor/leaflet.markercluster/MarkerCluster.css">
-  <link rel="stylesheet" href="vendor/leaflet.markercluster/MarkerCluster.Default.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -33,9 +31,9 @@
         </div>
         <p class="count" id="n-count" aria-live="polite"></p>
         <div class="notes">
-          <p>Reports submitted to the US <a href="https://nuforc.org/">National UFO Reporting Center</a>, geolocated and with standardised dates. The data stops in October 2022.</p>
+          <p>Reports submitted to the US <a href="https://nuforc.org/">National UFO Reporting Center</a>, geolocated and with standardised dates. They run from 1400 to October 2022: a handful of historical accounts, then 94% of the reports from 1990 onwards.</p>
           <p>The map shows each report's short summary. The full report opens on nuforc.org.</p>
-          <p>The view starts on the last two years. Widen the dates to see the whole history, back to the 1400s.</p>
+          <p>Narrow the dates to focus on a period.</p>
         </div>
       </aside>
       <div class="content">
@@ -103,7 +101,7 @@
   </main>
 
   <script src="vendor/leaflet/leaflet.js"></script>
-  <script src="vendor/leaflet.markercluster/leaflet.markercluster.js"></script>
+  <script src="vendor/supercluster/supercluster.min.js"></script>
   <script src="vendor/plotly/plotly-basic.min.js"></script>
   <script src="app.js"></script>
 </body>

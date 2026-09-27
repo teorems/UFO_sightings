@@ -183,13 +183,40 @@ legend { margin-bottom: 6px; padding: 0; }
   border-bottom-color: var(--border);
 }
 
-/* cluster size is a magnitude: one blue hue, brighter for bigger clusters */
-.marker-cluster-small, .marker-cluster-small div { background-color: rgba(28, 92, 171, 0.9); }
-.marker-cluster-medium, .marker-cluster-medium div { background-color: rgba(57, 135, 229, 0.9); }
-.marker-cluster-large, .marker-cluster-large div { background-color: rgba(134, 182, 239, 0.95); }
-.marker-cluster-small, .marker-cluster-medium, .marker-cluster-large { background-clip: padding-box; }
-.marker-cluster div { color: #ffffff; font-weight: 600; }
-.marker-cluster-large div { color: #0d1b2a; }
+/* clusters: a halo ring around a disc with the count. Cluster size is a
+   magnitude, so one blue hue, brighter for bigger clusters */
+.marker-cluster { border-radius: 20px; background-clip: padding-box; cursor: pointer; }
+.marker-cluster div {
+  width: 30px;
+  height: 30px;
+  margin: 5px 0 0 5px;
+  border-radius: 15px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: #ffffff;
+}
+.marker-cluster span { line-height: 30px; }
+.marker-cluster-small { background-color: rgba(28, 92, 171, 0.45); }
+.marker-cluster-small div { background-color: rgba(28, 92, 171, 0.95); }
+.marker-cluster-medium { background-color: rgba(57, 135, 229, 0.45); }
+.marker-cluster-medium div { background-color: rgba(57, 135, 229, 0.95); }
+.marker-cluster-large { background-color: rgba(134, 182, 239, 0.45); }
+.marker-cluster-large div { background-color: rgba(134, 182, 239, 0.95); color: #0d1b2a; }
+
+.report-list { margin: 0; padding: 0; list-style: none; max-height: 320px; overflow-y: auto; }
+.report-list li { border-bottom: 1px solid var(--border); }
+.report-list button {
+  width: 100%;
+  padding: 8px 4px;
+  font: inherit;
+  text-align: left;
+  color: var(--link);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.report-list button:hover { background: var(--raised); }
 
 .legend {
   padding: 8px 10px;
