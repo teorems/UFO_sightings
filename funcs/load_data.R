@@ -48,6 +48,8 @@ load_nuforc <- function(dir = "data", apply_coordinate_fixes = TRUE) {
     mutate(country = if_else(key %in% fixes$key, fixed, spelling)) %>%
     select(-key, -spelling, -fixed)
 
+  ufo <- clean_cities(ufo)
+
   # reports geocoded far from their country or US state (mostly towns sharing a
   # name with one in another state), re-placed or removed from the map by
   # scripts/fix_coordinates.R
@@ -69,6 +71,53 @@ load_nuforc <- function(dir = "data", apply_coordinate_fixes = TRUE) {
   ufo %>%
     arrange(date_time) %>%
     rowid_to_column("index")
+}
+
+# City names: spaces and dangling punctuation trimmed (the scraper left a
+# trailing space wherever it cut a note in brackets), placeholders made
+# unknown, names typed all in lower case or all in capitals re-capitalised, and
+# spellings of one town within a state/country merged under the most common one
+# ("St. Louis", "Saint Louis", "st louis").
+clean_cities <- function(ufo) {
+  city <- ufo$city %>%
+    str_squish() %>%
+    str_remove("^[\\s,;:)/-]+") %>%
+    str_remove("[\\s,;:(/-]+$")
+  unbalanced <- !is.na(city) & str_count(city, fixed("(")) != str_count(city, fixed(")"))
+  city[unbalanced] <- str_squish(str_remove_all(city[unbalanced], "[()]"))
+  placeholder <- "^(unknown|unk|n/?a|none|not sure|not known|various|multiple|anywhere|everywhere|undisclosed|[?.-]+)$"
+  city[is.na(city) | city == "" | str_detect(str_to_lower(city), placeholder)] <- NA
+
+  lower <- !is.na(city) & !str_detect(city, "[A-Z]")
+  capitals <- !is.na(city) & !str_detect(city, "[a-z]") & str_count(city, "[A-Z]") >= 4
+  recase <- lower | capitals
+  city[recase] <- str_to_title(city[recase]) %>%
+    str_replace_all("\\bMc[a-z]", ~ paste0("Mc", toupper(substring(.x, 3)))) %>%
+    str_replace_all("\\bO'[a-z]", ~ paste0("O'", toupper(substring(.x, 3)))) %>%
+    str_replace_all("(?<=\\s)(And|Of|The|On|In|At|By|For|De|Del|Da|Du|Des|Di)\\b", tolower)
+
+  city_key <- city %>%
+    str_to_lower() %>%
+    str_replace_all("&", " and ") %>%
+    str_remove_all("['.]") %>%
+    str_replace_all("[-,]", " ") %>%
+    str_replace_all("\\bst\\b", "saint") %>%
+    str_replace_all("\\bmt\\b", "mount") %>%
+    str_replace_all("\\bft\\b", "fort") %>%
+    str_squish()
+  spellings <- tibble(country = ufo$country, state = ufo$state, city_key, city) %>%
+    filter(!is.na(city)) %>%
+    count(country, state, city_key, city) %>%
+    group_by(country, state, city_key) %>%
+    slice_max(n, n = 1, with_ties = FALSE) %>%
+    ungroup() %>%
+    select(country, state, city_key, spelling = city)
+
+  ufo %>%
+    mutate(city_key = city_key) %>%
+    left_join(spellings, by = c("country", "state", "city_key")) %>%
+    mutate(city = spelling) %>%
+    select(-city_key, -spelling)
 }
 
 # GEIPAN's case export (case search page of https://www.cnes-geipan.fr). Dates
