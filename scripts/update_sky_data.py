@@ -47,6 +47,8 @@ NEWS_TOPIC = re.compile(
     r"\b(ufos?|uaps?|ufolog\w*|unidentified (anomalous|aerial|flying)|aaro|flying saucers?)\b",
     re.IGNORECASE,
 )
+# ...and drop match results of esports teams called UFOs ("OGS 2–0 UFOs")
+NEWS_NOISE = re.compile(r"\b\d{1,2}\s*[–-]\s*\d{1,2}\b|\be-?sports?\b", re.IGNORECASE)
 MAX_NEWS = 12
 
 
@@ -147,6 +149,8 @@ def update_news():
         if source and title.endswith(f" - {source}"):
             title = title[: -len(source) - 3].strip()
         if not title or not NEWS_TOPIC.search(title):
+            continue
+        if NEWS_NOISE.search(title) or NEWS_NOISE.search(source):
             continue
         if not re.match(r"^https?://", link):
             continue

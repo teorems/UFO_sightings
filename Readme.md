@@ -32,7 +32,7 @@ The dashboard shows each NUFORC report's short summary and links to the full rep
 
 ## France: GEIPAN cases
 
-The dashboard also has a France page built on the case database of [GEIPAN](https://www.cnes-geipan.fr), the unit of the French space agency (CNES) that investigates unidentified aerospace phenomena. Each case is classified after investigation, from A (identified) to D (still unexplained). The data is GEIPAN's case export (`data/export_cas.xlsx`, downloaded from the case search page on their site); to update it, download the export again and replace the file. Case descriptions are in French, and GEIPAN rounds locations to 0.1° to protect witnesses.
+The dashboard also has a France page built on the case database of [GEIPAN](https://www.cnes-geipan.fr), the unit of the French space agency (CNES) that investigates unidentified aerospace phenomena. Each case is classified after investigation, from A (identified) to D (still unexplained). The data is GEIPAN's case export (`data/export_cas.xlsx`, downloaded from the case search page on their site); to update it, download the export again and upload it in place of the file (see [Automatic updates](#automatic-updates)). Case descriptions are in French, and GEIPAN rounds locations to 0.1° to protect witnesses.
 
 ## Sky tonight
 
@@ -45,7 +45,7 @@ Positions are computed in the browser: satellites with [satellite.js](https://gi
 Two GitHub Actions workflows keep the data fresh and commit it when it changes; both can also be started by hand from the repository's Actions tab ("Run workflow"):
 
 - `update-sky-data.yml`, every day: downloads the satellite orbits, upcoming launches and UAP/UFO headlines (`scripts/update_sky_data.py`) into `docs/data/sky/`.
-- `update-geipan.yml`, every Monday: downloads GEIPAN's case export into `data/export_cas.xlsx` and rebuilds the site data. It refuses a download that isn't an Excel file or has far fewer cases than the current one, and commits only when the cases changed. It also refreshes the witness statement export (`data/export_temoignage.xlsx`). The download links, from the "Fichiers Excel" menu of GEIPAN's case search page, are set in the workflow.
+- `update-geipan.yml`: rebuilds the France page from GEIPAN's case export. GEIPAN's site refuses automated downloads (HTTP 429), so the reliable way to update is by hand: download the export from the "Fichiers Excel" menu of GEIPAN's case search page and upload it to `data/export_cas.xlsx` on GitHub (Add file → Upload files, on `main`); the workflow then starts by itself, checks the file and publishes the new site data. The witness statement export (`data/export_temoignage.xlsx`) can be uploaded the same way. The workflow refuses a file that isn't an Excel export or has far fewer cases than the previous one, and commits only when the cases changed. Every Monday it also tries the download itself; when GEIPAN refuses, it leaves a warning with GEIPAN's answer in the run log and changes nothing.
 
 GitHub pauses scheduled workflows in repositories without activity for 60 days; if that happens, re-enable them from the Actions tab.
 

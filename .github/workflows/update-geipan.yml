@@ -1,9 +1,20 @@
 name: Update GEIPAN data
 
-# Downloads GEIPAN's Excel exports once a week ("Fichiers Excel" menu of the
-# case search page) and rebuilds the site data, so the France page follows new
-# investigations without manual uploads.
+# Rebuilds the France page from GEIPAN's Excel exports ("Fichiers Excel" menu
+# of the case search page).
+#
+# - When a new export is uploaded to data/ on main, the job checks it and
+#   rebuilds the site data from it. This is the reliable way to update.
+# - Once a week it also tries to download the exports itself. GEIPAN's site
+#   may refuse automated downloads (HTTP 429); the job then only leaves a
+#   warning with GEIPAN's answer and changes nothing. It never retries harder
+#   or disguises itself as a browser.
 on:
+  push:
+    branches: [main]
+    paths:
+      - data/export_cas.xlsx
+      - data/export_temoignage.xlsx
   schedule:
     - cron: "43 5 * * 1"
   workflow_dispatch:
@@ -26,47 +37,75 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download the GEIPAN exports
+      - name: Use the uploaded export
+        if: github.event_name == 'push'
+        env:
+          BEFORE: ${{ github.event.before }}
         run: |
-          download() {
-            curl -fsSL --retry 3 -A "UFO_sightings dashboard (https://github.com/teorems/UFO_sightings)" -o "$2" "$1" &&
-              # an .xlsx file is a zip archive; anything else is an error page
-              [ "$(head -c 2 "$2")" = "PK" ]
-          }
-          if ! download "$GEIPAN_EXPORT_URL" "$RUNNER_TEMP/export_cas.xlsx"; then
-            echo "::error::The case export could not be downloaded as an Excel file"
-            exit 1
+          cp data/export_cas.xlsx "$RUNNER_TEMP/new_cas.xlsx"
+          # the export the site was built from, to compare the case counts
+          if git fetch --no-tags --depth=1 origin "$BEFORE" &&
+             git show "$BEFORE:data/export_cas.xlsx" > "$RUNNER_TEMP/old_cas.xlsx"; then
+            echo "Comparing with the export of $BEFORE"
+          else
+            echo "No previous export found; skipping the comparison"
+            cp data/export_cas.xlsx "$RUNNER_TEMP/old_cas.xlsx"
           fi
-          if ! download "$GEIPAN_STATEMENTS_URL" "$RUNNER_TEMP/export_temoignage.xlsx"; then
-            echo "::warning::The witness statement export could not be downloaded; keeping the current file"
-            rm -f "$RUNNER_TEMP/export_temoignage.xlsx"
+
+      - name: Download the GEIPAN exports
+        id: download
+        if: github.event_name != 'push'
+        run: |
+          # an .xlsx file is a zip archive; anything else is an error page
+          is_excel() { [ "$(head -c 2 "$1")" = "PK" ]; }
+          fetch() {
+            curl -sS -L --max-time 300 \
+              -A "UFO_sightings dashboard (https://github.com/teorems/UFO_sightings)" \
+              -D "$2.headers" -o "$2" -w '%{http_code}' "$1" || true
+          }
+          status=$(fetch "$GEIPAN_EXPORT_URL" "$RUNNER_TEMP/new_cas.xlsx")
+          if [ "$status" != "200" ] || ! is_excel "$RUNNER_TEMP/new_cas.xlsx"; then
+            if [ "$status" = "200" ]; then answer="a web page instead of the Excel file"; else answer="HTTP $status"; fi
+            echo "GEIPAN answered: $answer"
+            grep -iE '^(retry-after|server|content-type):' "$RUNNER_TEMP/new_cas.xlsx.headers" 2>/dev/null || true
+            echo "::warning::GEIPAN did not provide the case export ($answer); nothing was changed. To update the France page, download the export from the 'Fichiers Excel' menu of the case search page on cnes-geipan.fr and upload it to data/export_cas.xlsx on GitHub: this job then runs by itself."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          cp data/export_cas.xlsx "$RUNNER_TEMP/old_cas.xlsx"
+          cp "$RUNNER_TEMP/new_cas.xlsx" data/export_cas.xlsx
+          status=$(fetch "$GEIPAN_STATEMENTS_URL" "$RUNNER_TEMP/new_temoignage.xlsx")
+          if [ "$status" = "200" ] && is_excel "$RUNNER_TEMP/new_temoignage.xlsx"; then
+            cp "$RUNNER_TEMP/new_temoignage.xlsx" data/export_temoignage.xlsx
+          else
+            echo "::warning::The witness statement export was not provided (HTTP $status); keeping the current file"
           fi
 
       - name: Install R
+        if: steps.download.outputs.skip != 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends r-base-core r-cran-tidyverse r-cran-readxl r-cran-jsonlite
 
       - name: Check the export and rebuild the site data
+        if: steps.download.outputs.skip != 'true'
         run: |
-          # refuse an export with far fewer cases than the current one (a
+          # refuse an export with far fewer cases than the previous one (a
           # truncated or filtered download)
           Rscript -e '
-            old <- nrow(readxl::read_excel("data/export_cas.xlsx"))
-            new <- nrow(readxl::read_excel(file.path(Sys.getenv("RUNNER_TEMP"), "export_cas.xlsx")))
+            tmp <- Sys.getenv("RUNNER_TEMP")
+            old <- nrow(readxl::read_excel(file.path(tmp, "old_cas.xlsx")))
+            new <- nrow(readxl::read_excel(file.path(tmp, "new_cas.xlsx")))
             message("cases: ", old, " -> ", new)
-            if (new < 0.9 * old) stop("the new export has far fewer cases than the current one")
+            if (new < 0.9 * old) stop("the new export has far fewer cases than the previous one")
           '
-          cp "$RUNNER_TEMP/export_cas.xlsx" data/export_cas.xlsx
-          if [ -f "$RUNNER_TEMP/export_temoignage.xlsx" ]; then
-            cp "$RUNNER_TEMP/export_temoignage.xlsx" data/export_temoignage.xlsx
-          fi
           Rscript scripts/build_site_data.R
 
       - name: Commit if the cases changed
+        if: steps.download.outputs.skip != 'true'
         run: |
-          # the .xlsx differs on every download, so only the cases decide
-          if git diff --quiet -- docs/data/geipan.json; then
+          # a downloaded .xlsx differs on every download, so only the cases decide
+          if git diff --quiet -- docs/data; then
             echo "No new or changed cases."
             exit 0
           fi
