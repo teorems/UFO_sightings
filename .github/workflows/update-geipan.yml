@@ -1,7 +1,8 @@
 name: Update GEIPAN data
 
-# Downloads GEIPAN's case export once a week and rebuilds the site data, so the
-# France page follows new investigations without manual uploads.
+# Downloads GEIPAN's Excel exports once a week ("Fichiers Excel" menu of the
+# case search page) and rebuilds the site data, so the France page follows new
+# investigations without manual uploads.
 on:
   schedule:
     - cron: "43 5 * * 1"
@@ -15,8 +16,9 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  # The "export" link of the case search page on https://www.cnes-geipan.fr
-  GEIPAN_EXPORT_URL: ""
+  GEIPAN_EXPORT_URL: "https://www.cnes-geipan.fr/fr/cnes/export/cas"
+  # witness statements: not used by the site, kept in sync with the cases
+  GEIPAN_STATEMENTS_URL: "https://www.cnes-geipan.fr/fr/cnes/export/temoignages"
 
 jobs:
   update:
@@ -24,18 +26,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download the GEIPAN case export
+      - name: Download the GEIPAN exports
         run: |
-          if [ -z "$GEIPAN_EXPORT_URL" ]; then
-            echo "::error::Set GEIPAN_EXPORT_URL in .github/workflows/update-geipan.yml"
+          download() {
+            curl -fsSL --retry 3 -A "UFO_sightings dashboard (https://github.com/teorems/UFO_sightings)" -o "$2" "$1" &&
+              # an .xlsx file is a zip archive; anything else is an error page
+              [ "$(head -c 2 "$2")" = "PK" ]
+          }
+          if ! download "$GEIPAN_EXPORT_URL" "$RUNNER_TEMP/export_cas.xlsx"; then
+            echo "::error::The case export could not be downloaded as an Excel file"
             exit 1
           fi
-          curl -fsSL --retry 3 -A "UFO_sightings dashboard (https://github.com/teorems/UFO_sightings)" \
-            -o "$RUNNER_TEMP/export_cas.xlsx" "$GEIPAN_EXPORT_URL"
-          # an .xlsx file is a zip archive; anything else is an error page
-          if [ "$(head -c 2 "$RUNNER_TEMP/export_cas.xlsx")" != "PK" ]; then
-            echo "::error::The download is not an Excel file"
-            exit 1
+          if ! download "$GEIPAN_STATEMENTS_URL" "$RUNNER_TEMP/export_temoignage.xlsx"; then
+            echo "::warning::The witness statement export could not be downloaded; keeping the current file"
+            rm -f "$RUNNER_TEMP/export_temoignage.xlsx"
           fi
 
       - name: Install R
@@ -54,6 +58,9 @@ jobs:
             if (new < 0.9 * old) stop("the new export has far fewer cases than the current one")
           '
           cp "$RUNNER_TEMP/export_cas.xlsx" data/export_cas.xlsx
+          if [ -f "$RUNNER_TEMP/export_temoignage.xlsx" ]; then
+            cp "$RUNNER_TEMP/export_temoignage.xlsx" data/export_temoignage.xlsx
+          fi
           Rscript scripts/build_site_data.R
 
       - name: Commit if the cases changed
@@ -65,7 +72,7 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/export_cas.xlsx docs/data
+          git add data/export_cas.xlsx data/export_temoignage.xlsx docs/data
           git commit -m "Update GEIPAN data"
           git pull --rebase origin "${GITHUB_REF_NAME}"
           git push

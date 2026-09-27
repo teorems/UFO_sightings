@@ -45,7 +45,7 @@ Positions are computed in the browser: satellites with [satellite.js](https://gi
 Two GitHub Actions workflows keep the data fresh and commit it when it changes; both can also be started by hand from the repository's Actions tab ("Run workflow"):
 
 - `update-sky-data.yml`, every day: downloads the satellite orbits, upcoming launches and UAP/UFO headlines (`scripts/update_sky_data.py`) into `docs/data/sky/`.
-- `update-geipan.yml`, every Monday: downloads GEIPAN's case export into `data/export_cas.xlsx` and rebuilds the site data. It refuses a download that isn't an Excel file or has far fewer cases than the current one, and commits only when the cases changed. The download link is set in the workflow (`GEIPAN_EXPORT_URL`).
+- `update-geipan.yml`, every Monday: downloads GEIPAN's case export into `data/export_cas.xlsx` and rebuilds the site data. It refuses a download that isn't an Excel file or has far fewer cases than the current one, and commits only when the cases changed. It also refreshes the witness statement export (`data/export_temoignage.xlsx`). The download links, from the "Fichiers Excel" menu of GEIPAN's case search page, are set in the workflow.
 
 GitHub pauses scheduled workflows in repositories without activity for 60 days; if that happens, re-enable them from the Actions tab.
 
