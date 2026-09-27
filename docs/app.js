@@ -20,6 +20,10 @@ const GEIPAN_CLASSES = {
 const GEIPAN_COLORS = { A: '#1c5cab', B: '#3987e5', C: '#86b6ef', D: '#cde2fb' };
 const UNINFORMATIVE = 'Phénomène identifié non indiqué';
 
+// Points are drawn on a canvas, where a tap only counts inside the circle
+// unless the renderer widens it; fingers need a ~40px target, mice much less.
+const TAP_TOLERANCE = window.matchMedia('(pointer: coarse)').matches ? 14 : 4;
+
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
 
@@ -348,7 +352,7 @@ function nuforcPage() {
     to.value = last;
     [country, from, to].forEach((el) => el.addEventListener('change', apply));
 
-    map = L.map('n-map', { preferCanvas: true, minZoom: 1, worldCopyJump: true }).setView([30, 0], 2);
+    map = L.map('n-map', { renderer: L.canvas({ tolerance: TAP_TOLERANCE }), minZoom: 1, worldCopyJump: true }).setView([30, 0], 2);
     darkTiles().addTo(map);
     clusters = L.markerClusterGroup({ chunkedLoading: true, showCoverageOnHover: false });
     clusters.on('click', (e) => showReport(e.layer.idx));
@@ -546,7 +550,7 @@ function francePage() {
 
     // mainland France fills the map whatever the screen size; overseas cases
     // are there when zooming out
-    map = L.map('f-map', { preferCanvas: true, minZoom: 1 }).fitBounds([[41.3, -5.2], [51.1, 9.6]]);
+    map = L.map('f-map', { renderer: L.canvas({ tolerance: TAP_TOLERANCE }), minZoom: 1 }).fitBounds([[41.3, -5.2], [51.1, 9.6]]);
     darkTiles().addTo(map);
     layer = L.layerGroup().addTo(map);
     const legend = L.control({ position: 'bottomright' });
