@@ -5,6 +5,8 @@
   30 days (where fresh Starlink "trains" show up). The page propagates them in
   the browser with satellite.js.
 - launches.json: upcoming launches from The Space Devs' Launch Library 2.
+- news.json: the latest UAP/UFO headlines of the past week, from a Google News
+  search feed (headline, outlet, date and link only).
 
 Run daily by .github/workflows/update-sky-data.yml; standard library only.
 CelesTrak asks for at most one download per group every two hours, and the
@@ -13,9 +15,13 @@ within both. If a source fails, its previous data is kept.
 """
 
 import json
+import re
 import sys
+import urllib.parse
 import urllib.request
+import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 
 OUT = Path(__file__).resolve().parent.parent / "docs" / "data" / "sky"
@@ -31,6 +37,23 @@ OMM_FIELDS = [
 ]
 
 LAUNCHES = "https://ll.thespacedevs.com/2.2.0/launch/upcoming/?limit=25"
+
+NEWS = "https://news.google.com/rss/search?" + urllib.parse.urlencode({
+    "q": '"UAP" OR "UFO" OR "UFOs" OR "unidentified anomalous phenomena" when:7d',
+    "hl": "en-US", "gl": "US", "ceid": "US:en",
+})
+# the search also matches brands and bands called UFO; keep headlines about the topic
+NEWS_TOPIC = re.compile(
+    r"\b(ufos?|uaps?|ufolog\w*|unidentified (anomalous|aerial|flying)|aaro|flying saucers?)\b",
+    re.IGNORECASE,
+)
+MAX_NEWS = 12
+
+
+def fetch_bytes(url):
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    with urllib.request.urlopen(req, timeout=60) as res:
+        return res.read()
 
 
 def fetch_json(url):
@@ -109,6 +132,43 @@ def update_launches():
     return 1
 
 
+def update_news():
+    try:
+        root = ET.fromstring(fetch_bytes(NEWS))
+    except Exception as err:
+        print(f"News feed failed ({err}); kept previous news", file=sys.stderr)
+        return 0
+    items, seen = [], set()
+    for item in root.iter("item"):
+        title = (item.findtext("title") or "").strip()
+        link = (item.findtext("link") or "").strip()
+        source = (item.findtext("source") or "").strip()
+        # Google News appends " - Outlet" to every headline
+        if source and title.endswith(f" - {source}"):
+            title = title[: -len(source) - 3].strip()
+        if not title or not NEWS_TOPIC.search(title):
+            continue
+        if not re.match(r"^https?://", link):
+            continue
+        key = re.sub(r"\W+", " ", title.lower()).strip()
+        if key in seen:
+            continue
+        seen.add(key)
+        try:
+            published = parsedate_to_datetime(item.findtext("pubDate")).astimezone(timezone.utc)
+        except (TypeError, ValueError):
+            continue
+        items.append({"title": title, "source": source or None, "link": link,
+                      "published": published.strftime("%Y-%m-%dT%H:%M:%SZ")})
+    items.sort(key=lambda i: i["published"], reverse=True)
+    items = items[:MAX_NEWS]
+    print(f"News: {len(items)} headlines")
+    if not items:
+        return 0
+    write("news.json", {"updated": now_iso(), "source": "Google News search", "items": items})
+    return 1
+
+
 if __name__ == "__main__":
-    done = update_satellites() + update_launches()
+    done = update_satellites() + update_launches() + update_news()
     sys.exit(0 if done else 1)

@@ -1,7 +1,8 @@
 name: Update sky data
 
-# Satellite orbits (CelesTrak) and upcoming launches (Launch Library 2) for the
-# "Sky tonight" page. Orbits stay usable for days, so once a day is plenty.
+# Satellite orbits (CelesTrak), upcoming launches (Launch Library 2) and
+# UAP/UFO headlines (Google News search) for the "Sky tonight" page. Orbits
+# stay usable for days, so once a day is plenty.
 on:
   schedule:
     - cron: "17 4 * * *"
@@ -20,7 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Download satellite orbits and launches
+      - name: Download satellite orbits, launches and headlines
         run: python3 scripts/update_sky_data.py
 
       - name: Commit if anything changed

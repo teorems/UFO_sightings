@@ -171,6 +171,7 @@ function skyPage() {
   let observer = new Astronomy.Observer(place.lat, place.lon, 0);
   let sats = null;
   let launches = null;
+  let news = null;
   let explained = null;
   let tracked = [];
   let fresh = [];
@@ -390,6 +391,30 @@ function skyPage() {
       : '<p class="hint">No upcoming launch listed.</p>';
   }
 
+  function renderNews() {
+    const items = news && Array.isArray(news.items)
+      ? news.items.filter((n) => /^https?:\/\//.test(n.link || '') && n.title)
+      : [];
+    if (!items.length) {
+      $('#s-news').innerHTML = '<p class="hint">No headlines yet: they are collected once a day.</p>';
+      return;
+    }
+    const now = new Date();
+    const ago = (iso) => {
+      const h = Math.round((now - new Date(iso)) / 3600000);
+      if (h < 1) return 'just now';
+      if (h < 24) return `${h} h ago`;
+      const d = Math.round(h / 24);
+      return d === 1 ? 'yesterday' : `${d} days ago`;
+    };
+    $('#s-news').innerHTML = `
+      <ul class="news-list">${items.slice(0, 12).map((n) => `
+        <li><a href="${esc(n.link)}" target="_blank" rel="noopener noreferrer">${esc(n.title)}</a>
+        <span class="hint">${esc([n.source, ago(n.published)].filter(Boolean).join(' · '))}</span></li>`).join('')}
+      </ul>
+      <p class="hint">Headlines from the past week found by a Google News search, collected once a day; the site does not vouch for them.</p>`;
+  }
+
   function renderSources() {
     const age = (iso) => (iso ? `${new Date(iso).toLocaleDateString()}` : 'not yet');
     $('#s-sources').innerHTML = `Orbits: <a href="https://celestrak.org">CelesTrak</a>, updated ${esc(age(sats && sats.updated))}.
@@ -407,18 +432,21 @@ function skyPage() {
     renderTrains();
     renderPlanets();
     renderLaunches();
+    renderNews();
     renderSources();
   }
 
   async function init() {
     setStatus(status, 'Loading satellite orbits and launches…');
-    const [s, l, e] = await Promise.allSettled([
+    const [s, l, e, n] = await Promise.allSettled([
       getJSON('data/sky/satellites.json'),
       getJSON('data/sky/launches.json'),
       getJSON('data/geipan_explanations.json'),
+      getJSON('data/sky/news.json'),
     ]);
     sats = s.status === 'fulfilled' ? s.value : null;
     launches = l.status === 'fulfilled' ? l.value : null;
+    news = n.status === 'fulfilled' ? n.value : null;
     explained = e.status === 'fulfilled' ? e.value : null;
     setStatus(status, '');
 

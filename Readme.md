@@ -36,7 +36,7 @@ The dashboard also has a France page built on the case database of [GEIPAN](http
 
 ## Sky tonight
 
-The third page of the dashboard shows what someone looking up could be seeing, for any place (your location or a point on the map): where the International Space Station is right now, the next visible passes of the ISS, Tiangong and Hubble, the planets and Moon tonight, satellites overhead, fresh Starlink "trains", and upcoming rocket launches, flagging twilight launches whose lit plume is often reported as a UFO. Each part says how many GEIPAN cases were explained by it (`docs/data/geipan_explanations.json`).
+The third page of the dashboard shows what someone looking up could be seeing, for any place (your location or a point on the map): where the International Space Station is right now, the next visible passes of the ISS, Tiangong and Hubble, the planets and Moon tonight, satellites overhead, fresh Starlink "trains", and upcoming rocket launches, flagging twilight launches whose lit plume is often reported as a UFO. A last card lists the week's UAP and UFO headlines, from a Google News search. Each part says how many GEIPAN cases were explained by it (`docs/data/geipan_explanations.json`).
 
 Positions are computed in the browser: satellites with [satellite.js](https://github.com/shashwatak/satellite-js) from orbital elements published by [CelesTrak](https://celestrak.org), planets with [Astronomy Engine](https://github.com/cosinekitty/astronomy). Upcoming launches come from The Space Devs' [Launch Library 2](https://thespacedevs.com/llapi).
 
@@ -44,7 +44,7 @@ Positions are computed in the browser: satellites with [satellite.js](https://gi
 
 Two GitHub Actions workflows keep the data fresh and commit it when it changes; both can also be started by hand from the repository's Actions tab ("Run workflow"):
 
-- `update-sky-data.yml`, every day: downloads the satellite orbits and upcoming launches (`scripts/update_sky_data.py`) into `docs/data/sky/`.
+- `update-sky-data.yml`, every day: downloads the satellite orbits, upcoming launches and UAP/UFO headlines (`scripts/update_sky_data.py`) into `docs/data/sky/`.
 - `update-geipan.yml`, every Monday: downloads GEIPAN's case export into `data/export_cas.xlsx` and rebuilds the site data. It refuses a download that isn't an Excel file or has far fewer cases than the current one, and commits only when the cases changed. The download link is set in the workflow (`GEIPAN_EXPORT_URL`).
 
 GitHub pauses scheduled workflows in repositories without activity for 60 days; if that happens, re-enable them from the Actions tab.

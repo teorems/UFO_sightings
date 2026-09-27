@@ -336,6 +336,11 @@ td.nowrap { white-space: nowrap; }
 .sky-table th { background: var(--panel); }
 .sky-table tbody tr:nth-child(odd) { background: var(--raised); }
 
+.card.wide { grid-column: 1 / -1; }
+.news-list { margin: 0 0 8px; padding: 0; list-style: none; }
+.news-list li { padding: 7px 0; border-bottom: 1px solid var(--border); }
+.news-list li:last-child { border-bottom: 0; }
+.news-list a { display: block; margin-bottom: 2px; }
 .launch-list { margin: 0; padding: 0; list-style: none; }
 .launch-list li { padding: 8px 0; border-bottom: 1px solid var(--border); }
 .launch-list li:last-child { border-bottom: 0; }
