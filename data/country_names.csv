@@ -1,0 +1,231 @@
+# Fixes for NUFORC country names, applied by load_nuforc() in funcs/load_data.R.
+# "from" is matched case-insensitively against the country as written in the
+# data; "to" is the name to use instead, and an empty "to" means unknown (NA).
+# Choices: UK nations and cities go to United Kingdom; islands and regions go to
+# their country (territories such as Puerto Rico or Guam stay separate); reports
+# naming two places ("Germany/France") take the first one; open-sea reports use
+# the sea's name; anything in orbit or beyond is "Space". Values whose reports
+# all carry a US state or Canadian province ("NO", "none", "SI") follow it.
+from,to
+united states,USA
+untied states of america,USA
+u.s.a.,USA
+usausa,USA
+usav,USA
+colorado springs,USA
+oakland,USA
+nekoosa,USA
+decalb,USA
+georgia,USA
+citizen,USA
+no,USA
+u,USA
+none,USA
+non applicable,USA
+usa & canada,USA
+us and canada border,USA
+usa/canadian waters,USA
+puerto rico usa,Puerto Rico
+puerto rico commonwealth,Puerto Rico
+portereco 2 miles of the coast,Puerto Rico
+puerto rico/burmuda (between),Puerto Rico
+quebec,Canada
+over new brunswick,Canada
+si,Canada
+lake ontario,Canada
+uk/england,United Kingdom
+uk/wales,United Kingdom
+scotland,United Kingdom
+northern ireland,United Kingdom
+north wales,United Kingdom
+london,United Kingdom
+great britain,United Kingdom
+regatul unit,United Kingdom
+"isle of man, great britain",Isle of Man
+isle of man,Isle of Man
+channel islands,Guernsey
+republic of ireland,Ireland
+dublin ireland,Ireland
+west germany,Germany
+germany (west germany),Germany
+germany/france,Germany
+germany/holland,Germany
+grenoble,France
+corsica,France
+corsica (france),France
+france/antibes,France
+roma,Italy
+italy/greece,Italy
+menorca,Spain
+murcia,Spain
+tenerife,Spain
+"tenerife, spain",Spain
+gran canaria,Spain
+grand canary island,Spain
+azores,Portugal
+crete (greece),Greece
+hellenic republic,Greece
+nederland,Netherlands
+norge,Norway
+orust,Sweden
+sweden/denmark,Sweden
+swizterland,Switzerland
+switzerland/uk (in flight),Switzerland
+luxemburg,Luxembourg
+slovak republic,Slovakia
+slovakia/austria,Slovakia
+croatia (hrvatska),Croatia
+bosnia and herzegovina,Bosnia and Herzegovina
+macedonia,North Macedonia
+macedonia (fyrom),North Macedonia
+republic of macedonia,North Macedonia
+kosova,Kosovo
+moldova (republic of ),Moldova
+russia (ussr),Russia
+russian federation,Russia
+russia (former ukraine),Ukraine
+republic of georgia,Georgia
+türkiye,Turkey
+kazakstan,Kazakhstan
+kyrgyzistan,Kyrgyzstan
+outer mongolia,Mongolia
+viet nam,Vietnam
+south vietnam,Vietnam
+central viet nam,Vietnam
+korea,South Korea
+korea (south),South Korea
+korea south,South Korea
+republic of korea,South Korea
+south korea / japan,South Korea
+okinawa,Japan
+okinawa japan,Japan
+japan (okinawa),Japan
+china also?,China
+hong kong sar,Hong Kong
+hong kong s.a.r.,Hong Kong
+sukumwit,Thailand
+thailand & malaysia,Thailand
+myanmar (burma),Myanmar
+srilanka,Sri Lanka
+srui lanka,Sri Lanka
+"hatton city, sri lanka",Sri Lanka
+chennai. tamil nadu,India
+india (south- east),India
+andaman islands,India
+uae,United Arab Emirates
+united arad emirates,United Arab Emirates
+dubai,United Arab Emirates
+oman/uae,Oman
+sultanate of oman,Oman
+kingdom of bahrain,Bahrain
+israel - near petach tikva,Israel
+lebanon (middle east),Lebanon
+sinai,Egypt
+nairobi,Kenya
+kenya (east africa),Kenya
+nigeria 🇳🇬,Nigeria
+republic of south africa,South Africa
+south-africa,South Africa
+rhodesia (now zimbabwe),Zimbabwe
+swaziland,Eswatini
+congo,Democratic Republic of the Congo
+democratic republic of the congo,Democratic Republic of the Congo
+"tunisia-italia,midellsea",Tunisia
+mauritius island,Mauritius
+reunion island,Réunion
+st. helena island,Saint Helena
+saint helena south atlantic ocean,Saint Helena
+cape verde island,Cape Verde
+tasmania,Australia
+western australia,Australia
+new zealand -taranaki,New Zealand
+federated states of micronesia,Micronesia
+republic of palau,Palau
+saipan,Northern Mariana Islands
+midway island,United States Minor Outlying Islands
+tijuana b.c,Mexico
+"san miguel tecuitlapa, puebla, mexico",Mexico
+on the way to cozumel,Mexico
+guatamala,Guatemala
+perú,Peru
+republic of panama,Panama
+panama canal,Panama
+panama canal zone,Panama
+"guyana, south america",Guyana
+surinam,Suriname
+bahamas the,Bahamas
+the bahamas,Bahamas
+euleuthera,Bahamas
+bahamas/usa,Bahamas
+grand cayman,Cayman Islands
+grand cayman island,Cayman Islands
+caicos islands,Turks and Caicos Islands
+turks & caicos,Turks and Caicos Islands
+caribbean (grand turk),Turks and Caicos Islands
+trinidad,Trinidad and Tobago
+trinidad/tobago,Trinidad and Tobago
+trinidad & tobago,Trinidad and Tobago
+trinidad and tobago,Trinidad and Tobago
+st. kitts,Saint Kitts and Nevis
+antigua,Antigua and Barbuda
+grenadine islands,Saint Vincent and the Grenadines
+south georgia and the south sandwich islands,South Georgia and the South Sandwich Islands
+st. lucia,Saint Lucia
+saint maarten,Sint Maarten
+st. maarten/netherland antilles,Sint Maarten
+st. martin,Saint Martin
+netherland antilles,Netherlands Antilles
+"dominica, west indies",Dominica
+santo domingo,Dominican Republic
+ochorios,Jamaica
+el cobre,Cuba
+cuba/florida (between),Cuba
+u. s. virgin islands,U.S. Virgin Islands
+us virgin islands,U.S. Virgin Islands
+usvi,U.S. Virgin Islands
+virgin islands,U.S. Virgin Islands
+virgin islands (u. s.),U.S. Virgin Islands
+virgin islands (u.s.),U.S. Virgin Islands
+virgin islands (us),U.S. Virgin Islands
+st. thomas,U.S. Virgin Islands
+san juan and st. thomas usvi,U.S. Virgin Islands
+st thomas and nassau,U.S. Virgin Islands
+north atlantic,Atlantic Ocean
+north atlantic ocean,Atlantic Ocean
+mid-atlantic ocean,Atlantic Ocean
+middle of the atlantic ocean,Atlantic Ocean
+east atlantic ocean,Atlantic Ocean
+south atlantic ocean,Atlantic Ocean
+atlantic ocean/puerto rico,Atlantic Ocean
+south atlantic/caribbean (on cruise ship),Atlantic Ocean
+over ocean between london and northern netherlands,North Sea
+pacific ocean (western),Pacific Ocean
+pacific ocean ( between philippines and japan ),Pacific Ocean
+pacific ocean (in-fight),Pacific Ocean
+above the pacific ocean,Pacific Ocean
+south pacific,Pacific Ocean
+south pacific ocean,Pacific Ocean
+tokyo to honolulu,Pacific Ocean
+lat 2 deg 48 min n 124 deg w,Pacific Ocean
+indian ocean 500 miles from nearest land,Indian Ocean
+mediterrainian sea,Mediterranean Sea
+mediterranean sea.,Mediterranean Sea
+caribbean,Caribbean Sea
+caribbean sea/atantic ocean,Caribbean Sea
+gulf of mexico / florida straits,Gulf of Mexico
+in orbit,Space
+in orbit (space),Space
+in orbit in space,Space
+international space station,Space
+near earth orbit,Space
+space via nasa tv,Space
+moon,Space
+mars,Space
+yes,
+yup,
+unknown,
+unknown/at sea,
+foreign,
+cruise ship,
+europe,
+far east,

@@ -8,7 +8,7 @@ After some tinkering with this dataset, i resolved myself to build a scraper on 
 
 I include here all the datasets which include reports compiled until October 2022 . The first dataset is a mostly a quite funny florilegium of historical anecdotes. The records that follow are voluntary reports, sometimes lucid, sometimes unorthodox, submitted to the website.
 
-Additional data cleaning is needed to normalize the toponyms, task which i plan to do next.
+Country names are normalised when the data is loaded: spelling variants, typos, regions and non-answers are mapped to one name per country through `data/country_names.csv`, which can be edited directly. City names still need cleaning.
 
 The dashboard (`app.R`) loads and merges every extract in `data/`, covering reports from the 1400s through October 2022, and is still just there to give a rough idea of the phenomenon.
 

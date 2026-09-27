@@ -33,11 +33,20 @@ load_nuforc <- function(dir = "data") {
     mutate(spelling = if_else(nchar(spelling) <= 3, str_to_upper(spelling), spelling)) %>%
     select(key, spelling)
 
+  # variants, typos, regions and non-answers, listed in data/country_names.csv
+  # (an empty "to" means unknown)
+  fixes <- read_csv(
+    file.path(dir, "country_names.csv"),
+    comment = "#", col_types = "cc", na = character()
+  ) %>%
+    transmute(key = str_to_lower(str_squish(from)), fixed = na_if(to, ""))
+
   ufo %>%
     mutate(key = str_to_lower(str_squish(country))) %>%
     left_join(spellings, by = "key") %>%
-    mutate(country = spelling) %>%
-    select(-key, -spelling) %>%
+    left_join(fixes, by = "key") %>%
+    mutate(country = if_else(key %in% fixes$key, fixed, spelling)) %>%
+    select(-key, -spelling, -fixed) %>%
     arrange(date_time) %>%
     rowid_to_column("index")
 }
