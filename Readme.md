@@ -18,7 +18,7 @@ The dashboard merges every extract in `data/`, covering reports from the 1400s t
 
 ## The dashboard
 
-The dashboard at <https://teorems.github.io/UFO_sightings/> is served by GitHub Pages from the `docs/` folder. It needs no server: the page is plain HTML and JavaScript (Leaflet for the maps, Plotly for the charts) and reads its data from JSON files in `docs/data/`.
+The dashboard at <https://teorems.github.io/UFO_sightings/> is served by GitHub Pages from the `docs/` folder. It needs no server: the page is plain HTML and JavaScript (Leaflet and Supercluster for the maps, Plotly for the charts) and reads its data from JSON files in `docs/data/`.
 
 To keep it in sync after the data changes, regenerate those files with R from the repository root and commit them:
 

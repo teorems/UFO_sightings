@@ -47,12 +47,6 @@ function fmtDate(t) {
   return time && time !== '00:00' ? `${date}, ${time}` : date;
 }
 
-function shiftYears(isoDate, years) {
-  const [y, m, d] = isoDate.split('-');
-  const day = m === '02' && d === '29' ? '28' : d;
-  return `${String(+y + years).padStart(4, '0')}-${m}-${day}`;
-}
-
 function setStatus(el, text, isError = false) {
   el.textContent = text;
   el.classList.toggle('error', isError);
@@ -238,9 +232,11 @@ function nuforcPage() {
   let selection = [];
   let shown = null;
   const markers = [];
+  const features = [];
   const stale = { chart: true, table: true };
   let map;
-  let clusters;
+  let layer;
+  let index = null;
   let table;
   let tabs;
 
@@ -264,28 +260,87 @@ function nuforcPage() {
       <p><a href="${reportUrl(i)}" target="_blank" rel="noopener">Open the full report on NUFORC</a></p>`;
   }
 
-  function marker(i) {
+  function marker(i, latlng) {
     if (!markers[i]) {
-      const m = L.circleMarker([D.lat[i], D.lng[i]], {
+      const m = L.circleMarker(latlng, {
         radius: 5, color: SURFACE, weight: 1, fillColor: SERIES, fillOpacity: 0.9,
       });
-      m.idx = i;
       m.bindPopup(() => popup(i));
+      m.on('click', () => showReport(i));
       markers[i] = m;
     }
-    return markers[i];
+    return markers[i].setLatLng(latlng);
+  }
+
+  // reports sharing one spot (every report of a city has the same coordinates)
+  // can't be split by zooming, so they are listed instead, most recent first
+  function listPlace(indices) {
+    const shownMax = 100;
+    const sorted = indices.slice().sort((a, b) => (D.t[b] > D.t[a] ? 1 : -1));
+    const where = place(sorted[0]) || 'This place';
+    $('#n-detail').innerHTML = `
+      <h3>${esc(where)}</h3>
+      <p class="meta">${fmt(indices.length)} reports here${indices.length > shownMax ? `, the ${shownMax} most recent below; search the table for the rest` : ''}</p>
+      <ul class="report-list">${sorted.slice(0, shownMax).map((i) => `
+        <li><button type="button" data-i="${i}">${esc(fmtDate(D.t[i]))} · ${esc(D.shape[i] || 'Unknown shape')}</button></li>`).join('')}
+      </ul>`;
+    $('#n-detail').querySelectorAll('button[data-i]').forEach((b) => b.addEventListener('click', () => {
+      showReport(+b.dataset.i);
+      $('#n-detail').scrollIntoView({ block: 'nearest' });
+    }));
+  }
+
+  function clusterMarker(f, latlng) {
+    const n = f.properties.point_count;
+    const size = n < 10 ? 'small' : n < 100 ? 'medium' : 'large';
+    const m = L.marker(latlng, {
+      icon: L.divIcon({
+        html: `<div><span>${f.properties.point_count_abbreviated}</span></div>`,
+        className: `marker-cluster marker-cluster-${size}`,
+        iconSize: L.point(40, 40),
+      }),
+      keyboard: true,
+      title: `${fmt(n)} reports`,
+    });
+    m.on('click', () => {
+      const id = f.properties.cluster_id;
+      const zoom = index.getClusterExpansionZoom(id);
+      if (zoom <= map.getMaxZoom()) map.setView(latlng, zoom);
+      else listPlace(index.getLeaves(id, Infinity).map((leaf) => leaf.properties.i));
+    });
+    return m;
+  }
+
+  // Supercluster groups the whole selection once; only the clusters and points
+  // in view become map layers, which keeps 140,000 reports fast on phones
+  function drawView() {
+    layer.clearLayers();
+    if (!index) return;
+    const b = map.getBounds();
+    const centerLng = map.getCenter().lng;
+    for (const f of index.getClusters([b.getWest(), b.getSouth(), b.getEast(), b.getNorth()], Math.round(map.getZoom()))) {
+      const [lng, lat] = f.geometry.coordinates;
+      // draw on the world copy being viewed
+      const latlng = [lat, lng + 360 * Math.round((centerLng - lng) / 360)];
+      layer.addLayer(f.properties.cluster ? clusterMarker(f, latlng) : marker(f.properties.i, latlng));
+    }
   }
 
   function drawMap() {
-    clusters.clearLayers();
-    const layers = [];
-    for (const i of selection) if (D.lat[i] != null && D.lng[i] != null) layers.push(marker(i));
-    clusters.addLayers(layers);
-    // bounds come from the markers themselves: with chunkedLoading the cluster
-    // group is still filling up at this point
-    if (country.value !== 'World' && layers.length) {
-      map.fitBounds(L.latLngBounds(layers.map((m) => m.getLatLng())), { maxZoom: 7, padding: [20, 20] });
+    const points = [];
+    let south = 90; let north = -90; let west = 180; let east = -180;
+    for (const i of selection) {
+      if (D.lat[i] == null || D.lng[i] == null) continue;
+      features[i] = features[i] || { type: 'Feature', properties: { i }, geometry: { type: 'Point', coordinates: [D.lng[i], D.lat[i]] } };
+      points.push(features[i]);
+      south = Math.min(south, D.lat[i]); north = Math.max(north, D.lat[i]);
+      west = Math.min(west, D.lng[i]); east = Math.max(east, D.lng[i]);
     }
+    index = new Supercluster({ radius: 60, maxZoom: map.getMaxZoom() }).load(points);
+    if (country.value !== 'World' && points.length) {
+      map.fitBounds([[south, west], [north, east]], { maxZoom: 7, padding: [20, 20] });
+    }
+    drawView();
   }
 
   function drawChart() {
@@ -348,15 +403,16 @@ function nuforcPage() {
     const first = D.t[0].slice(0, 10);
     const last = D.t[D.t.length - 1].slice(0, 10);
     [from, to].forEach((el) => { el.min = first; el.max = last; });
-    from.value = shiftYears(last, -2);
+    from.value = first;
     to.value = last;
     [country, from, to].forEach((el) => el.addEventListener('change', apply));
 
-    map = L.map('n-map', { renderer: L.canvas({ tolerance: TAP_TOLERANCE }), minZoom: 1, worldCopyJump: true }).setView([30, 0], 2);
+    map = L.map('n-map', {
+      renderer: L.canvas({ tolerance: TAP_TOLERANCE }), minZoom: 1, maxZoom: 18, worldCopyJump: true,
+    }).setView([30, 0], 2);
     darkTiles().addTo(map);
-    clusters = L.markerClusterGroup({ chunkedLoading: true, showCoverageOnHover: false });
-    clusters.on('click', (e) => showReport(e.layer.idx));
-    map.addLayer(clusters);
+    layer = L.layerGroup().addTo(map);
+    map.on('moveend', drawView);
 
     table = makeTable($('#n-table'), [
       { label: 'Date', get: (i) => D.t[i], format: (i) => fmtDate(D.t[i]), nowrap: true },
