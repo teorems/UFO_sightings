@@ -1,0 +1,78 @@
+name: Update GEIPAN data
+
+# Downloads GEIPAN's Excel exports once a week ("Fichiers Excel" menu of the
+# case search page) and rebuilds the site data, so the France page follows new
+# investigations without manual uploads.
+on:
+  schedule:
+    - cron: "43 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: data-updates
+  cancel-in-progress: false
+
+env:
+  GEIPAN_EXPORT_URL: "https://www.cnes-geipan.fr/fr/cnes/export/cas"
+  # witness statements: not used by the site, kept in sync with the cases
+  GEIPAN_STATEMENTS_URL: "https://www.cnes-geipan.fr/fr/cnes/export/temoignages"
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download the GEIPAN exports
+        run: |
+          download() {
+            curl -fsSL --retry 3 -A "UFO_sightings dashboard (https://github.com/teorems/UFO_sightings)" -o "$2" "$1" &&
+              # an .xlsx file is a zip archive; anything else is an error page
+              [ "$(head -c 2 "$2")" = "PK" ]
+          }
+          if ! download "$GEIPAN_EXPORT_URL" "$RUNNER_TEMP/export_cas.xlsx"; then
+            echo "::error::The case export could not be downloaded as an Excel file"
+            exit 1
+          fi
+          if ! download "$GEIPAN_STATEMENTS_URL" "$RUNNER_TEMP/export_temoignage.xlsx"; then
+            echo "::warning::The witness statement export could not be downloaded; keeping the current file"
+            rm -f "$RUNNER_TEMP/export_temoignage.xlsx"
+          fi
+
+      - name: Install R
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends r-base-core r-cran-tidyverse r-cran-readxl r-cran-jsonlite
+
+      - name: Check the export and rebuild the site data
+        run: |
+          # refuse an export with far fewer cases than the current one (a
+          # truncated or filtered download)
+          Rscript -e '
+            old <- nrow(readxl::read_excel("data/export_cas.xlsx"))
+            new <- nrow(readxl::read_excel(file.path(Sys.getenv("RUNNER_TEMP"), "export_cas.xlsx")))
+            message("cases: ", old, " -> ", new)
+            if (new < 0.9 * old) stop("the new export has far fewer cases than the current one")
+          '
+          cp "$RUNNER_TEMP/export_cas.xlsx" data/export_cas.xlsx
+          if [ -f "$RUNNER_TEMP/export_temoignage.xlsx" ]; then
+            cp "$RUNNER_TEMP/export_temoignage.xlsx" data/export_temoignage.xlsx
+          fi
+          Rscript scripts/build_site_data.R
+
+      - name: Commit if the cases changed
+        run: |
+          # the .xlsx differs on every download, so only the cases decide
+          if git diff --quiet -- docs/data/geipan.json; then
+            echo "No new or changed cases."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/export_cas.xlsx data/export_temoignage.xlsx docs/data
+          git commit -m "Update GEIPAN data"
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push

@@ -31,8 +31,31 @@ ufo %>%
 
 write_json(ufo$summary, file.path(out, "nuforc_summaries.json"), na = "null")
 
-load_geipan() %>%
+geipan <- load_geipan()
+geipan %>%
   rename(lng = long) %>%
   write_columns("geipan.json")
 
-walk(list.files(out, full.names = TRUE), ~ message(sprintf("%-28s %6.1f MB", basename(.x), file.size(.x) / 1e6)))
+# identified GEIPAN cases (classes A and B) explained by what the "Sky tonight"
+# page shows, for its captions ("GEIPAN identified 86 sightings as the ISS")
+explained_as <- c(
+  iss = "^iss\\b",
+  satellites = "satellite|starlink|iridium",
+  venus = "^v[ée]nus$",
+  jupiter = "^jupiter$",
+  mars = "^mars$",
+  saturn = "^saturne$",
+  moon = "^lune( rousse)?$",
+  rockets = "rentr[ée]e atmosph|lanceur|fus[ée]e$|d[ée]bris spatia"
+)
+identified <- geipan %>%
+  filter(class %in% c("A", "B"), !is.na(explanation)) %>%
+  pull(explanation) %>%
+  str_to_lower()
+write_json(
+  list(identified = length(identified), counts = as.list(map_int(explained_as, ~ sum(str_detect(identified, .x))))),
+  file.path(out, "geipan_explanations.json"), auto_unbox = TRUE
+)
+
+walk(list.files(out, pattern = "\\.json$", full.names = TRUE),
+  ~ message(sprintf("%-28s %6.1f MB", basename(.x), file.size(.x) / 1e6)))
