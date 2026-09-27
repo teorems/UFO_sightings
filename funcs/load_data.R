@@ -3,7 +3,7 @@
 # Every extract in data/ is merged. The extracts overlap at their boundaries
 # (e.g. 2022 is both in the 2011-2022 bundle and in the standalone 2022
 # refresh), so duplicates are dropped by event_url, which identifies a report.
-load_nuforc <- function(dir = "data") {
+load_nuforc <- function(dir = "data", apply_coordinate_fixes = TRUE) {
   data_cols <- c(
     "date_time", "localisation", "city", "state", "country", "shape",
     "duration", "summary", "posted", "images", "event_url", "full_desc",
@@ -41,12 +41,32 @@ load_nuforc <- function(dir = "data") {
   ) %>%
     transmute(key = str_to_lower(str_squish(from)), fixed = na_if(to, ""))
 
-  ufo %>%
+  ufo <- ufo %>%
     mutate(key = str_to_lower(str_squish(country))) %>%
     left_join(spellings, by = "key") %>%
     left_join(fixes, by = "key") %>%
     mutate(country = if_else(key %in% fixes$key, fixed, spelling)) %>%
-    select(-key, -spelling, -fixed) %>%
+    select(-key, -spelling, -fixed)
+
+  # reports geocoded far from their country or US state (mostly towns sharing a
+  # name with one in another state), re-placed or removed from the map by
+  # scripts/fix_coordinates.R
+  coords_file <- file.path(dir, "coordinate_fixes.csv")
+  if (apply_coordinate_fixes && file.exists(coords_file)) {
+    coords <- read_csv(coords_file, col_types = cols(id = "i", lat = "d", long = "d", .default = "c")) %>%
+      select(id, fixed_lat = lat, fixed_long = long)
+    ufo <- ufo %>%
+      mutate(id = as.integer(str_extract(event_url, "\\d+$"))) %>%
+      left_join(coords, by = "id") %>%
+      mutate(
+        fixed = id %in% coords$id,
+        lat = if_else(fixed, fixed_lat, lat),
+        long = if_else(fixed, fixed_long, long)
+      ) %>%
+      select(-id, -fixed_lat, -fixed_long, -fixed)
+  }
+
+  ufo %>%
     arrange(date_time) %>%
     rowid_to_column("index")
 }

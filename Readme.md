@@ -12,6 +12,8 @@ I include here all the datasets which include reports compiled until October 202
 
 Country names are normalised when the data is loaded: spelling variants, typos, regions and non-answers are mapped to one name per country through `data/country_names.csv`, which can be edited directly. City names still need cleaning.
 
+Some coordinates were wrong, mostly US towns geocoded to a town of the same name in another state (Aurora, Colorado placed in Aurora, Illinois). `scripts/fix_coordinates.R` finds reports more than 100 km from their country or US state and looks the town up again, in the [GeoNames](https://www.geonames.org) list of places with 1,000+ inhabitants (CC BY 4.0), then in a US ZIP code list for smaller towns. It found about 2,400 such reports out of 140,000: about 1,700 were placed again, and about 670 whose city names no place ("unknown", "Arkansas", misspellings) were taken off the map but stay in the tables and charts. The results are in `data/coordinate_fixes.csv`, with the old and new coordinates of each report, and are applied when the data is loaded.
+
 The dashboard merges every extract in `data/`, covering reports from the 1400s through October 2022, and is still just there to give a rough idea of the phenomenon.
 
 ## The dashboard
