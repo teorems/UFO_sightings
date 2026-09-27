@@ -1,5 +1,7 @@
 # UFO Sightings around the world
 
+**Dashboard: <https://teorems.github.io/UFO_sightings/>**, with maps, charts and tables of NUFORC reports from around the world and GEIPAN cases in France.
+
 The [National UFO Reporting Center](https://nuforc.org/) hosts reporting about UFO sightings.
 
 I started this project at first with a dataset provided by [planetsig](https://github.com/planetsig/ufo-reports) which spans from 1900 to 2014. The problem with this data, even if geolocated, was that very few countries outside US were specified and should be sought with reversed geocoding or locality matching. Moreover, the full description included in the online reports was not there.
@@ -10,19 +12,21 @@ I include here all the datasets which include reports compiled until October 202
 
 Country names are normalised when the data is loaded: spelling variants, typos, regions and non-answers are mapped to one name per country through `data/country_names.csv`, which can be edited directly. City names still need cleaning.
 
-The dashboard (`app.R`) loads and merges every extract in `data/`, covering reports from the 1400s through October 2022, and is still just there to give a rough idea of the phenomenon.
+The dashboard merges every extract in `data/`, covering reports from the 1400s through October 2022, and is still just there to give a rough idea of the phenomenon.
 
-## Online version
+## The dashboard
 
-A static version of the dashboard runs at <https://teorems.github.io/UFO_sightings/>, served by GitHub Pages from the `docs/` folder. It needs no R server: the page is plain HTML and JavaScript (Leaflet for the maps, Plotly for the charts) and reads its data from JSON files in `docs/data/`.
+The dashboard at <https://teorems.github.io/UFO_sightings/> is served by GitHub Pages from the `docs/` folder. It needs no server: the page is plain HTML and JavaScript (Leaflet for the maps, Plotly for the charts) and reads its data from JSON files in `docs/data/`.
 
-To keep it in sync after the data changes, regenerate those files from the repository root and commit them:
+To keep it in sync after the data changes, regenerate those files with R from the repository root and commit them:
 
 ```
 Rscript scripts/build_site_data.R
 ```
 
-The online version shows each NUFORC report's short summary and links to the full report on nuforc.org; the full texts (~50 MB compressed) would make the page too heavy. The Shiny app (`app.R`) still works locally and shows the full texts.
+The dashboard shows each NUFORC report's short summary and links to the full report on nuforc.org; the full texts (~50 MB compressed) would make the page too heavy.
+
+`app.R` is the original Shiny version of the dashboard. It is no longer deployed, but it still runs locally in R and shows the full report texts.
 
 ## France: GEIPAN cases
 
