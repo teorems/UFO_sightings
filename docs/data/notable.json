@@ -60,8 +60,7 @@
       "why": "One of the best-known French close encounters, still classed as unexplained by GEIPAN.",
       "geipan": "1965-07-00050",
       "sources": [
-        { "label": "GEIPAN case search", "url": "https://www.cnes-geipan.fr/fr/recherche/cas" },
-        { "label": "Wikipédia (fr)", "url": "https://fr.wikipedia.org/wiki/Affaire_de_Valensole" }
+        { "label": "GEIPAN case search", "url": "https://www.cnes-geipan.fr/fr/recherche/cas" }
       ]
     },
     {
@@ -76,8 +75,7 @@
       "summary": "After calls about a bright light over the city, two Iranian Air Force F-4 Phantoms were sent up shortly after midnight. Both crews reported losing instruments and communications as they approached it.",
       "why": "A military intercept documented in a declassified US intelligence report.",
       "sources": [
-        { "label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/1976_Tehran_UFO_incident" },
-        { "label": "CIA reading room", "url": "https://www.cia.gov/readingroom/node/764911" }
+        { "label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/1976_Tehran_UFO_incident" }
       ]
     },
     {
@@ -93,7 +91,7 @@
       "why": "Britain's most famous case, with an official memo from a senior officer.",
       "sources": [
         { "label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Rendlesham_Forest_incident" },
-        { "label": "The National Archives: UFO files", "url": "https://www.nationalarchives.gov.uk/ufos/" }
+        { "label": "The National Archives: UFO files", "url": "https://webarchive.nationalarchives.gov.uk/ukgwa/20191202160456/http:/www.nationalarchives.gov.uk/ufos/" }
       ]
     },
     {
@@ -202,7 +200,7 @@
       "why": "The case that, with the 2017 New York Times article, brought UAPs back into US politics.",
       "sources": [
         { "label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/USS_Nimitz_UFO_incident" },
-        { "label": "US Department of Defense", "url": "https://www.defense.gov/News/Releases/Release/Article/2165713/statement-by-the-department-of-defense-on-the-release-of-historical-navy-videos/" }
+        { "label": "The Pentagon videos", "url": "https://en.wikipedia.org/wiki/Pentagon_UFO_videos" }
       ]
     },
     {
