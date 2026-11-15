@@ -647,8 +647,8 @@ function francePage() {
 
 // ---- routing ----------------------------------------------------------------
 
-const pages = { nuforc: nuforcPage(), france: francePage(), sky: skyPage() };
-const HASH_TO_PAGE = { '#france': 'france', '#worldwide': 'nuforc', '#sky': 'sky' };
+const pages = { nuforc: nuforcPage(), france: francePage(), sky: skyPage(), notable: notablePage() };
+const HASH_TO_PAGE = { '#france': 'france', '#worldwide': 'nuforc', '#sky': 'sky', '#notable': 'notable' };
 
 function route() {
   const name = HASH_TO_PAGE[location.hash] || 'nuforc';

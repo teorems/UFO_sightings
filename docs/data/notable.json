@@ -1,0 +1,238 @@
+{
+  "updated": "2026-11-15",
+  "about": "Hand-picked cases with official records or serious investigations behind them. Kept up to date by the monthly review (see Readme.md). status: unexplained = the investigating body found no explanation; disputed = an explanation exists but is contested or only covers part of the events; explained = the official explanation is broadly accepted.",
+  "cases": [
+    {
+      "id": "arnold-1947",
+      "title": "Kenneth Arnold's 'flying saucers'",
+      "date": "1947-06-24",
+      "place": "Near Mount Rainier, Washington",
+      "country": "United States",
+      "lat": 46.85, "lng": -121.76,
+      "status": "disputed",
+      "verdict": "No settled explanation; mirages, birds and meteor fragments have been proposed.",
+      "summary": "A private pilot reported nine bright objects flying in a chain at very high speed past Mount Rainier. His description of them moving 'like a saucer skipped across water' gave the press the phrase 'flying saucer'.",
+      "why": "The sighting that started the modern UFO era.",
+      "sources": [
+        { "label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Kenneth_Arnold_UFO_sighting" }
+      ]
+    },
+    {
+      "id": "roswell-1947",
+      "title": "Roswell debris",
+      "date": "1947-07-08",
+      "place": "Near Roswell, New Mexico",
+      "country": "United States",
+      "lat": 33.39, "lng": -104.52,
+      "status": "explained",
+      "verdict": "US Air Force reports (1994, 1997): debris from Project Mogul, a classified high-altitude balloon programme.",
+      "summary": "Roswell Army Air Field announced it had recovered a 'flying disc', then the next day said it was a weather balloon. Interest revived from the late 1970s with claims of a crashed craft and bodies.",
+      "why": "The most famous UFO case, and an example of a mystery fed by a cover story for a real secret project.",
+      "sources": [
+        { "label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Roswell_incident" }
+      ]
+    },
+    {
+      "id": "washington-1952",
+      "title": "Washington radar sightings",
+      "date": "1952-07-19",
+      "place": "Washington, D.C.",
+      "country": "United States",
+      "lat": 38.85, "lng": -77.04,
+      "status": "explained",
+      "verdict": "US Air Force (press conference of 29 July 1952): radar echoes caused by temperature inversions.",
+      "summary": "On two weekends in July 1952, air traffic controllers tracked unknown radar returns over the capital, some also seen as lights by pilots. Jet fighters were sent up without result.",
+      "why": "Made headlines worldwide and led to the CIA's Robertson Panel in 1953.",
+      "sources": [
+        { "label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/1952_Washington,_D.C.,_UFO_incident" }
+      ]
+    },
+    {
+      "id": "valensole-1965",
+      "title": "Valensole landing",
+      "date": "1965-07-01",
+      "place": "Valensole, Alpes-de-Haute-Provence",
+      "country": "France",
+      "lat": 43.84, "lng": 5.99,
+      "status": "unexplained",
+      "verdict": "GEIPAN class D: unexplained after investigation.",
+      "summary": "At dawn a farmer in his lavender field saw a dark craft on the ground and two small figures who quickly got back in before it took off. He found marks in the soil where it had stood; the gendarmerie investigated.",
+      "why": "One of the best-known French close encounters, still classed as unexplained by GEIPAN.",
+      "geipan": "1965-07-00050",
+      "sources": [
+        { "label": "GEIPAN case search", "url": "https://www.cnes-geipan.fr/fr/recherche/cas" }
+      ]
+    },
+    {
+      "id": "tehran-1976",
+      "title": "Tehran F-4 intercept",
+      "date": "1976-09-19",
+      "place": "Tehran",
+      "country": "Iran",
+      "lat": 35.69, "lng": 51.39,
+      "status": "unexplained",
+      "verdict": "No official explanation; a US Defense Intelligence Agency report called it 'an outstanding report'. Sceptics point to Jupiter and equipment failures.",
+      "summary": "After calls about a bright light over the city, two Iranian Air Force F-4 Phantoms were sent up shortly after midnight. Both crews reported losing instruments and communications as they approached it.",
+      "why": "A military intercept documented in a declassified US intelligence report.",
+      "sources": [
+        { "label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/1976_Tehran_UFO_incident" }
+      ]
+    },
+    {
+      "id": "rendlesham-1980",
+      "title": "Rendlesham Forest",
+      "date": "1980-12-26",
+      "place": "Rendlesham Forest, Suffolk",
+      "country": "United Kingdom",
+      "lat": 52.09, "lng": 1.44,
+      "status": "disputed",
+      "verdict": "UK Ministry of Defence: 'of no defence significance'. Sceptics: the Orford Ness lighthouse, a bright meteor and police car lights.",
+      "summary": "Over several nights, US Air Force personnel from RAF Woodbridge reported lights and a craft in the forest. Deputy base commander Charles Halt sent a memo to the Ministry of Defence; the MoD's file was released through The National Archives.",
+      "why": "Britain's most famous case, with an official memo from a senior officer.",
+      "sources": [
+        { "label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Rendlesham_Forest_incident" },
+        { "label": "The National Archives: UFO files", "url": "https://webarchive.nationalarchives.gov.uk/ukgwa/20191202160456/http:/www.nationalarchives.gov.uk/ufos/" }
+      ]
+    },
+    {
+      "id": "trans-en-provence-1981",
+      "title": "Trans-en-Provence landing traces",
+      "date": "1981-01-08",
+      "place": "Trans-en-Provence, Var",
+      "country": "France",
+      "lat": 43.5, "lng": 6.49,
+      "status": "unexplained",
+      "verdict": "GEIPAN class D: unexplained after investigation.",
+      "summary": "A man working on his terrace saw a grey, circular craft about 2.5 m wide land a few dozen metres away and leave after a few seconds. GEPAN, GEIPAN's predecessor, had the soil and plants at the site analysed in laboratories.",
+      "why": "The case with the most extensive physical analysis in GEIPAN's files.",
+      "geipan": "1981-01-00849",
+      "sources": [
+        { "label": "GEIPAN case search", "url": "https://www.cnes-geipan.fr/fr/recherche/cas" },
+        { "label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Trans-en-Provence_case" }
+      ]
+    },
+    {
+      "id": "hessdalen-1981",
+      "title": "Hessdalen lights",
+      "date": "1981-12-01",
+      "place": "Hessdalen valley",
+      "country": "Norway",
+      "lat": 62.79, "lng": 11.19,
+      "status": "unexplained",
+      "verdict": "A natural phenomenon still under scientific study; its cause is unknown.",
+      "summary": "Since late 1981, lights have been seen over this valley, sometimes several times a week in the early years. Project Hessdalen has monitored them with cameras and instruments since 1983, with an automatic station since 1998.",
+      "why": "A rare recurring phenomenon studied by scientists over decades.",
+      "sources": [
+        { "label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Hessdalen_lights" }
+      ]
+    },
+    {
+      "id": "jal1628-1986",
+      "title": "Japan Air Lines flight 1628",
+      "date": "1986-11-17",
+      "place": "Over Alaska",
+      "country": "United States",
+      "lat": 65.5, "lng": -146.0,
+      "status": "disputed",
+      "verdict": "The FAA found the crew credible but could not confirm the radar contacts; sceptics suggest Jupiter and Mars.",
+      "summary": "The crew of a Boeing 747 cargo flight from Paris to Tokyo reported large lights accompanying their aircraft for about 50 minutes over Alaska. The FAA investigated and released its file in 1987.",
+      "why": "A long sighting by an airline crew, investigated by the FAA.",
+      "sources": [
+        { "label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Japan_Air_Lines_Cargo_Flight_1628_incident" }
+      ]
+    },
+    {
+      "id": "belgium-1989",
+      "title": "Belgian wave",
+      "date": "1989-11-29",
+      "place": "Eupen and eastern Belgium",
+      "country": "Belgium",
+      "lat": 50.63, "lng": 6.04,
+      "status": "disputed",
+      "verdict": "The famous triangle photo (Petit-Rechain, April 1990) was a hoax, admitted in 2011; the radar returns of 30–31 March 1990 remain debated.",
+      "summary": "From November 1989 to 1991, thousands of people reported large triangles with lights. On the night of 30–31 March 1990 the Belgian Air Force scrambled two F-16s after radar detections; the pilots saw nothing.",
+      "why": "One of the largest waves of sightings, with an air force that made its data public.",
+      "sources": [
+        { "label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Belgian_UFO_wave" }
+      ]
+    },
+    {
+      "id": "af3532-1994",
+      "title": "Air France flight AF3532",
+      "date": "1994-01-28",
+      "place": "Over Coulommiers, Seine-et-Marne",
+      "country": "France",
+      "lat": 48.82, "lng": 3.09,
+      "status": "unexplained",
+      "verdict": "GEIPAN class D: unexplained after investigation.",
+      "summary": "The crew of an Air France A320 from Nice to London saw a large dark brown or red disc change shape and vanish. At the same moment a military radar recorded an unidentified track for 50 seconds crossing the flight's path.",
+      "why": "An airline crew's sighting matched by a military radar record.",
+      "geipan": "1994-01-01345",
+      "sources": [
+        { "label": "GEIPAN case search", "url": "https://www.cnes-geipan.fr/fr/recherche/cas" }
+      ]
+    },
+    {
+      "id": "phoenix-1997",
+      "title": "Phoenix Lights",
+      "date": "1997-03-13",
+      "place": "Phoenix, Arizona",
+      "country": "United States",
+      "lat": 33.45, "lng": -112.07,
+      "status": "explained",
+      "verdict": "US Air Force: flares dropped by A-10 aircraft on a training exercise; the earlier V of lights was a formation of A-10s. Some witnesses reject this.",
+      "summary": "Thousands of people across Arizona saw a V of lights pass overhead, and later a row of stationary lights near Phoenix. The evening was widely filmed.",
+      "why": "One of the most widely witnessed sightings, and a lesson in how two events can merge into one story.",
+      "sources": [
+        { "label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/Phoenix_Lights" }
+      ]
+    },
+    {
+      "id": "nimitz-2004",
+      "title": "USS Nimitz 'Tic Tac'",
+      "date": "2004-11-14",
+      "place": "Pacific Ocean, off Baja California",
+      "country": "United States",
+      "lat": 31.6, "lng": -117.6,
+      "status": "unexplained",
+      "verdict": "The Pentagon released the infrared video in April 2020; the object remains unidentified.",
+      "summary": "During exercises of the USS Nimitz carrier group, Navy pilots were sent to check radar contacts and described a white, wingless object shaped like a Tic Tac. A later crew filmed it with an infrared camera.",
+      "why": "The case that, with the 2017 New York Times article, brought UAPs back into US politics.",
+      "sources": [
+        { "label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/USS_Nimitz_UFO_incident" },
+        { "label": "The Pentagon videos", "url": "https://en.wikipedia.org/wiki/Pentagon_UFO_videos" }
+      ]
+    },
+    {
+      "id": "nancy-2004",
+      "title": "Mirage patrol over Nancy",
+      "date": "2004-10-15",
+      "place": "Near Nancy, Meurthe-et-Moselle",
+      "country": "France",
+      "lat": 48.69, "lng": 6.17,
+      "status": "unexplained",
+      "verdict": "GEIPAN class D: unexplained after investigation.",
+      "summary": "A Mirage pilot reported being 'followed' by an aircraft behind his patrol. The leader also saw a dot that disappeared after 15 to 20 seconds, but ground controllers found no trace of other traffic.",
+      "why": "A brief encounter reported by military pilots, unexplained by GEIPAN.",
+      "geipan": "2004-10-01631",
+      "sources": [
+        { "label": "GEIPAN case search", "url": "https://www.cnes-geipan.fr/fr/recherche/cas" }
+      ]
+    },
+    {
+      "id": "ohare-2006",
+      "title": "O'Hare airport disc",
+      "date": "2006-11-07",
+      "place": "O'Hare International Airport, Chicago",
+      "country": "United States",
+      "lat": 41.98, "lng": -87.9,
+      "status": "disputed",
+      "verdict": "The FAA did not investigate and called it a probable weather phenomenon; no photo or radar record has been confirmed.",
+      "summary": "United Airlines staff and pilots reported a dark grey disc hovering over gate C17 before shooting up through the clouds and leaving a hole in them.",
+      "why": "Seen by aviation professionals at one of the busiest airports in the world.",
+      "sources": [
+        { "label": "Wikipedia", "url": "https://en.wikipedia.org/wiki/2006_O%27Hare_International_Airport_UFO_sighting" }
+      ]
+    }
+  ]
+}
