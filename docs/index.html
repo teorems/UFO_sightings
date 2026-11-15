@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>UFO Sightings</title>
-  <meta name="description" content="Maps and charts of UFO reports: NUFORC reports from around the world and GEIPAN investigations in France.">
+  <meta name="description" content="Maps and charts of UFO reports: NUFORC reports from around the world, GEIPAN investigations in France, what is in the sky tonight and a selection of notable cases.">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛸</text></svg>">
   <link rel="stylesheet" href="vendor/leaflet/leaflet.css">
   <link rel="stylesheet" href="style.css">
@@ -16,6 +16,7 @@
       <a href="#worldwide" data-page="nuforc">Worldwide (NUFORC)</a>
       <a href="#france" data-page="france">France (GEIPAN)</a>
       <a href="#sky" data-page="sky">Sky tonight</a>
+      <a href="#notable" data-page="notable">Notable cases</a>
     </nav>
     <a class="repo" href="https://github.com/teorems/UFO_sightings">Source on GitHub</a>
   </header>
@@ -150,6 +151,26 @@
         </div>
       </div>
     </section>
+    <section id="page-notable" class="page" aria-label="Notable cases" hidden>
+      <aside class="sidebar">
+        <fieldset>
+          <legend>Status</legend>
+          <div id="c-filters"></div>
+        </fieldset>
+        <p class="count" id="c-count" aria-live="polite"></p>
+        <div class="notes">
+          <p>A selection of cases with official records or serious investigations behind them, from GEIPAN's files and from around the world.</p>
+          <p><strong>Unexplained</strong>: the investigating body found no explanation. <strong>Disputed</strong>: an explanation exists but is contested, or covers only part of the events. <strong>Explained</strong>: the official explanation is broadly accepted.</p>
+          <p>"Unexplained" means the investigators ran out of explanations, not that something extraordinary happened.</p>
+          <p id="c-updated"></p>
+        </div>
+      </aside>
+      <div class="content">
+        <p class="status" id="c-status" aria-live="polite"></p>
+        <div id="c-map" class="map map-short"></div>
+        <div id="c-list" class="case-list"></div>
+      </div>
+    </section>
   </main>
 
   <script src="vendor/leaflet/leaflet.js"></script>
@@ -158,6 +179,7 @@
   <script src="vendor/satellite/satellite.min.js"></script>
   <script src="vendor/astronomy/astronomy.browser.min.js"></script>
   <script src="sky.js"></script>
+  <script src="notable.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

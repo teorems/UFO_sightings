@@ -364,3 +364,34 @@ td.nowrap { white-space: nowrap; }
   .map { height: 62vh; }
   .tabs button { padding: 9px 12px; }
 }
+
+/* notable cases */
+.map-short { height: 380px; }
+.case-list { display: grid; gap: 12px; margin-top: 12px; }
+.case { padding: 14px 16px; background: var(--panel); border-radius: 6px; min-width: 0; }
+.case:focus { outline: 2px solid var(--focus); outline-offset: 2px; }
+.case h3 { margin: 0 0 4px; font-size: 1.05rem; }
+.case p { margin: 0 0 8px; }
+.case p:last-child { margin-bottom: 0; }
+.case .meta { color: var(--muted); font-size: 0.9rem; }
+.case .why { color: var(--muted); font-size: 0.92rem; }
+.case .links { font-size: 0.9rem; }
+.badge {
+  display: inline-block;
+  margin-right: 6px;
+  padding: 1px 8px;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #1a1a1a;
+  background: var(--badge);
+}
+.linklike {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--link);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}

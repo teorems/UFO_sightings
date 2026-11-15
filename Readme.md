@@ -40,6 +40,14 @@ The third page of the dashboard shows what someone looking up could be seeing, f
 
 Positions are computed in the browser: satellites with [satellite.js](https://github.com/shashwatak/satellite-js) from orbital elements published by [CelesTrak](https://celestrak.org), planets with [Astronomy Engine](https://github.com/cosinekitty/astronomy). Upcoming launches come from The Space Devs' [Launch Library 2](https://thespacedevs.com/llapi).
 
+## Notable cases
+
+The fourth page lists a selection of well-documented cases, from GEIPAN's files and from around the world, each with what the investigating body concluded (unexplained, disputed or explained), why the case matters and links to the sources. The list is in `docs/data/notable.json` and can be edited by hand.
+
+## Monthly review
+
+Once a month, on the 1st, a scheduled Claude session looks for new public sources of UFO/UAP reports (official archives, open data, reliable private databases whose terms allow reuse), adds those that are reliable and usable to the dashboard, and reviews the notable cases. It publishes the changes itself after testing them and sends a summary email of what it found, added and left out. It never scrapes a site whose terms forbid it.
+
 ## Automatic updates
 
 Two GitHub Actions workflows keep the data fresh and commit it when it changes; both can also be started by hand from the repository's Actions tab ("Run workflow"):
