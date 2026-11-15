@@ -1,0 +1,39 @@
+name: Probe GEIPAN sources (temporary)
+on:
+  push:
+    branches: [claude/exciting-ramanujan-rkox4i]
+    paths: [.github/workflows/probe-sources.yml]
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Probe
+        run: |
+          UA="UFO_sightings dashboard (https://github.com/teorems/UFO_sightings)"
+          head_of() {
+            echo "=== $1"
+            curl -sS -L -m 60 -A "$UA" -o body -D hdr -w 'status=%{http_code} type=%{content_type} size=%{size_download} final=%{url_effective}\n' "$1" || true
+            grep -iE '^(retry-after|location|content-disposition|last-modified):' hdr || true
+            printf 'starts with: '; head -c 2 body | od -An -c | tr -s ' '; echo
+            sleep 3
+          }
+          for u in https://geipan.fr/robots.txt https://www.cnes-geipan.fr/robots.txt; do head_of "$u"; cat body | head -40; done
+          head_of https://geipan.fr/fr/cnes/export/cas
+          head_of https://geipan.fr/fr/export/cas
+          head_of https://www.cnes-geipan.fr/fr/cnes/export/cas
+          head_of https://geipan.fr/fr/recherche/cas
+          grep -oiE 'href="[^"]*(export|xls|csv|json|opendata|data\.gouv)[^"]*"' body | sort -u | head -30
+          head_of https://cnes-geipan.fr/fr/recherche/cas
+          grep -oiE 'href="[^"]*(export|xls|csv|json|opendata|data\.gouv)[^"]*"' body | sort -u | head -30
+          echo "=== data.gouv.fr"
+          for q in geipan ovni "phenomenes aerospatiaux non identifies" "pan cnes"; do
+            curl -sS -m 60 -G "https://www.data.gouv.fr/api/1/datasets/" --data-urlencode "q=$q" -d page_size=8 |
+              python3 -c "
+          import json,sys
+          d=json.load(sys.stdin); print('q=', sys.argv[1], 'total', d['total'])
+          for x in d['data']:
+              print(' -', x['title'], '|', (x.get('organization') or {}).get('name'), '|', x['last_update'][:10], '|', x['page'])
+              for r in x['resources'][:5]: print('     ', r['format'], (r.get('last_modified') or '')[:10], r['url'])
+          " "$q"
+            sleep 2
+          done
